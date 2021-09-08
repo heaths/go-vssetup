@@ -90,7 +90,9 @@ func InstanceForPath(path string) (*Instance, error) {
 func (q *query) init() (*interop.ISetupConfiguration2, error) {
 	if !q.didInit {
 		if err := ole.CoInitialize(0); err != nil {
-			if e, ok := err.(*ole.OleError); ok && e.Code() == ole.E_NOTIMPL {
+			if err.Error() == "" {
+				err = ole.NewErrorWithSubError(ole.E_NOTIMPL, "not implemented", err)
+			} else if e, ok := err.(*ole.OleError); ok && e.Code() == ole.E_NOTIMPL {
 				// Likely not supported on the current platform, so don't try again.
 				q.didInit = true
 			}
