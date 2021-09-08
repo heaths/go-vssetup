@@ -7,6 +7,7 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
+//nolint:stylecheck
 func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
