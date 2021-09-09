@@ -13,7 +13,8 @@ go get github.com/heaths/go-vssetup
 You can then use the `vssetup` module to enumerate instances:
 
 ```go
-instances, _ := vssetup.Instances(all)
+// Enumerate launchable instances.
+instances, _ := vssetup.Instances(false)
 for _, instance := range instances {
     instanceId, _ := instance.InstanceId()
     fmt.Println("InstanceId = ", instanceId)

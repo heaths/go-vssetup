@@ -28,11 +28,11 @@ func (v *ISetupConfiguration) EnumInstances() (*IEnumSetupInstances, error) {
 }
 
 func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupConfiguration) GetInstanceForPath() (*ISetupInstance, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupConfiguration2) EnumAllInstances() (*IEnumSetupInstances, error) {

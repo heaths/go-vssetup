@@ -28,8 +28,8 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
 	return bstrInstanceId, nil
 }
 
-func (v *ISetupInstance) GetInstallDate() (*windows.Filetime, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupInstance) GetInstallationName() (*uint16, error) {
@@ -67,17 +67,17 @@ func (v *ISetupInstance) GetInstallationPath() (*uint16, error) {
 }
 
 func (v *ISetupInstance) GetInstallationVersion() (*uint16, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupInstance) GetDisplayName(lcid uint32) (*uint16, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupInstance) GetDescription(lcid uint32) (*uint16, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
 func (v *ISetupInstance) ResolvePath(pwszRelativePath *uint16) (*uint16, error) {
-	return nil, ole.NewError(ole.E_NOTIMPL)
+	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }

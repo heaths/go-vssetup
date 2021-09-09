@@ -16,7 +16,11 @@ func init() {
 	ole.CoInitialize(0)
 
 	if unk, err := ole.CreateInstance(interop.CLSID_SetupConfiguration, interop.IID_ISetupConfiguration2); err != nil {
-		query.err = err
+		if err.Error() == "" {
+			query.err = ole.NewErrorWithSubError(ole.E_NOTIMPL, "not implemented", err)
+		} else {
+			query.err = err
+		}
 	} else {
 		query.v = (*interop.ISetupConfiguration2)(unsafe.Pointer(unk))
 	}
