@@ -34,3 +34,12 @@ jobs:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
       run: GOOS=${{ matrix.goos }} go test ./... -cover
+
+  check:
+    runs-on: windows-latest
+    needs: test
+    steps:
+    - name: lint
+      run: |
+        echo "Linting to be added later."
+        echo "This serves as a temporary sink to require a clean build in branch policy for 'main'."
