@@ -20,19 +20,19 @@ func main() {
 
 	for _, instance := range instances {
 		if instanceId, err := instance.InstanceId(); err == nil {
-			fmt.Println("InstanceId = ", instanceId)
+			fmt.Println("InstanceId =", instanceId)
 		}
 
 		if installDate, err := instance.InstallDate(); err == nil {
-			fmt.Println("InstallDate = ", installDate)
+			fmt.Println("InstallDate =", installDate)
 		}
 
 		if installationName, err := instance.InstallationName(); err == nil {
-			fmt.Println("InstallationName = ", installationName)
+			fmt.Println("InstallationName =", installationName)
 		}
 
 		if installationPath, err := instance.InstallationPath(); err == nil {
-			fmt.Println("InstallationPath = ", installationPath)
+			fmt.Println("InstallationPath =", installationPath)
 		}
 
 		fmt.Println()
