@@ -30,6 +30,10 @@ func (v *IEnumSetupInstances) Next(celt uint32) ([]*ISetupInstance, error) {
 		return nil, ole.NewError(hr)
 	}
 
+	if celtFetched == 0 {
+		return []*ISetupInstance{}, nil
+	}
+
 	instances := unsafe.Slice(&rgelt[0], celtFetched)
 	return instances, nil
 }

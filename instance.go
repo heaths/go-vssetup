@@ -1,6 +1,8 @@
 package vssetup
 
 import (
+	"time"
+
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 )
@@ -15,6 +17,14 @@ func (instance *Instance) InstanceId() (string, error) {
 		return "", err
 	} else {
 		return ole.BstrToString(bstr), nil
+	}
+}
+
+func (instance *Instance) InstallDate() (time.Time, error) {
+	if ft, err := instance.v.GetInstallDate(); err != nil {
+		return time.Time{}, err
+	} else {
+		return ft.Time(), nil
 	}
 }
 

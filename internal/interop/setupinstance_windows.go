@@ -8,7 +8,6 @@ import (
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
-	"golang.org/x/sys/windows"
 )
 
 func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
@@ -29,7 +28,20 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
 }
 
 func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var ft filetime
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetInstallDate,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&ft)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return &ft, nil
 }
 
 func (v *ISetupInstance) GetInstallationName() (*uint16, error) {

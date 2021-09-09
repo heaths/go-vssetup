@@ -7,6 +7,10 @@ type filetime struct {
 	highDateTime uint32
 }
 
+func (ft *filetime) Time() time.Time {
+	return time.Unix(0, ft.nanoseconds())
+}
+
 // Copied from https://cs.opensource.google/go/x/sys/+/master:windows/types_windows.go;l=766;drc=0f9fa26af87c481a6877a4ca1330699ba9a30673.
 func (ft *filetime) nanoseconds() int64 {
 	// 100-nanosecond intervals since January 1, 1601
@@ -16,8 +20,4 @@ func (ft *filetime) nanoseconds() int64 {
 	// convert into nanoseconds
 	nsec *= 100
 	return nsec
-}
-
-func (ft *filetime) time() time.Time {
-	return time.Unix(0, ft.nanoseconds())
 }

@@ -23,6 +23,10 @@ func main() {
 			fmt.Println("InstanceId = ", instanceId)
 		}
 
+		if installDate, err := instance.InstallDate(); err == nil {
+			fmt.Println("InstallDate = ", installDate)
+		}
+
 		if installationName, err := instance.InstallationName(); err == nil {
 			fmt.Println("InstallationName = ", installationName)
 		}
