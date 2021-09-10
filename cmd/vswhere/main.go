@@ -40,20 +40,29 @@ func main() {
 			fmt.Println()
 		}
 
-		if instanceID, err := instance.InstanceID(); err == nil {
-			fmt.Println("InstanceID =", instanceID)
+		if s, err := instance.InstanceID(); err == nil {
+			fmt.Println("InstanceID =", s)
 		}
 
-		if installDate, err := instance.InstallDate(); err == nil {
-			fmt.Println("InstallDate =", installDate)
+		if d, err := instance.InstallDate(); err == nil {
+			fmt.Println("InstallDate =", d)
 		}
 
-		if installationName, err := instance.InstallationName(); err == nil {
-			fmt.Println("InstallationName =", installationName)
+		if s, err := instance.InstallationName(); err == nil {
+			fmt.Println("InstallationName =", s)
 		}
 
-		if installationPath, err := instance.InstallationPath(); err == nil {
-			fmt.Println("InstallationPath =", installationPath)
+		if s, err := instance.InstallationPath(); err == nil {
+			fmt.Println("InstallationPath =", s)
+		}
+
+		lcid := vssetup.Locale()
+		if s, err := instance.DisplayName(lcid); err == nil {
+			fmt.Println("DisplayName =", s)
+		}
+
+		if s, err := instance.Description(lcid); err == nil {
+			fmt.Println("Description =", s)
 		}
 	}
 }

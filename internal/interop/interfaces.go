@@ -6,6 +6,7 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
+//nolint:stylecheck
 var (
 	CLSID_SetupConfiguration = ole.NewGUID("177F0C4A-1CD3-4DE7-A32C-71DBBB9FA36D")
 
@@ -65,7 +66,7 @@ type ISetupInstance struct {
 
 type ISetupInstanceVtbl struct {
 	ole.IUnknownVtbl
-	GetInstanceId          uintptr
+	GetInstanceId          uintptr //nolint:stylecheck
 	GetInstallDate         uintptr
 	GetInstallationName    uintptr
 	GetInstallationPath    uintptr

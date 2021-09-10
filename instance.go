@@ -47,3 +47,19 @@ func (instance *Instance) InstallationPath() (string, error) {
 		return ole.BstrToString(bstr), nil
 	}
 }
+
+func (instance *Instance) DisplayName(lcid uint32) (string, error) {
+	if bstr, err := instance.v.GetDisplayName(lcid); err != nil {
+		return "", err
+	} else {
+		return ole.BstrToString(bstr), nil
+	}
+}
+
+func (instance *Instance) Description(lcid uint32) (string, error) {
+	if bstr, err := instance.v.GetDescription(lcid); err != nil {
+		return "", err
+	} else {
+		return ole.BstrToString(bstr), nil
+	}
+}

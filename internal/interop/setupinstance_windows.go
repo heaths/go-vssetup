@@ -10,13 +10,13 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
-func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
-	var bstrInstanceId *uint16
+func (v *ISetupInstance) GetInstanceId() (*uint16, error) { //nolint:stylecheck
+	var bstr *uint16
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstanceId,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstrInstanceId)),
+		uintptr(unsafe.Pointer(&bstr)),
 		0,
 	)
 
@@ -24,7 +24,7 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstrInstanceId, nil
+	return bstr, nil
 }
 
 func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
@@ -45,12 +45,12 @@ func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
 }
 
 func (v *ISetupInstance) GetInstallationName() (*uint16, error) {
-	var bstrInstallationName *uint16
+	var bstr *uint16
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallationName,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstrInstallationName)),
+		uintptr(unsafe.Pointer(&bstr)),
 		0,
 	)
 
@@ -58,16 +58,16 @@ func (v *ISetupInstance) GetInstallationName() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstrInstallationName, nil
+	return bstr, nil
 }
 
 func (v *ISetupInstance) GetInstallationPath() (*uint16, error) {
-	var bstrInstallationPath *uint16
+	var bstr *uint16
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallationPath,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstrInstallationPath)),
+		uintptr(unsafe.Pointer(&bstr)),
 		0,
 	)
 
@@ -75,21 +75,73 @@ func (v *ISetupInstance) GetInstallationPath() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstrInstallationPath, nil
+	return bstr, nil
 }
 
 func (v *ISetupInstance) GetInstallationVersion() (*uint16, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var bstr *uint16
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetInstallationVersion,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&bstr)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return bstr, nil
 }
 
 func (v *ISetupInstance) GetDisplayName(lcid uint32) (*uint16, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var bstr *uint16
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetDisplayName,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(lcid),
+		uintptr(unsafe.Pointer(&bstr)),
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return bstr, nil
 }
 
 func (v *ISetupInstance) GetDescription(lcid uint32) (*uint16, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var bstr *uint16
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetDescription,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(lcid),
+		uintptr(unsafe.Pointer(&bstr)),
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return bstr, nil
 }
 
 func (v *ISetupInstance) ResolvePath(pwszRelativePath *uint16) (*uint16, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var bstr *uint16
+	hr, _, _ := syscall.Syscall(
+		v.VTable().ResolvePath,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(pwszRelativePath)),
+		uintptr(unsafe.Pointer(&bstr)),
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return bstr, nil
 }
