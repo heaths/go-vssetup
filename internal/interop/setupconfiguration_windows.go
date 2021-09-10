@@ -28,11 +28,37 @@ func (v *ISetupConfiguration) EnumInstances() (*IEnumSetupInstances, error) {
 }
 
 func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+	var i *ISetupInstance
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetInstanceForCurrentProcess,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&i)),
+		0,
+	)
+
+	if hr != ole.S_OK {
+		return nil, ole.NewError(hr)
+	}
+
+	return i, nil
 }
 
-func (v *ISetupConfiguration) GetInstanceForPath() (*ISetupInstance, error) {
-	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
+func (v *ISetupConfiguration) GetInstanceForPath(path *int16) (*ISetupInstance, error) {
+	var i *ISetupInstance
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetInstanceForPath,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(path)),
+		uintptr(unsafe.Pointer(&i)),
+	)
+
+	if hr != ole.S_OK {
+		return nil, ole.NewError(hr)
+	}
+
+	return i, nil
 }
 
 func (v *ISetupConfiguration2) EnumAllInstances() (*IEnumSetupInstances, error) {

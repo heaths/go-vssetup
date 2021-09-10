@@ -39,7 +39,14 @@ jobs:
     runs-on: windows-latest
     needs: test
     steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: install go ${{ env.GOVERSION }}
+      uses: actions/setup-go@v2.1.4
+      with:
+        go-version: '^${{ env.GOVERSION }}'
     - name: lint
-      run: |
-        echo "Linting to be added later."
-        echo "This serves as a temporary sink to require a clean build in branch policy for 'main'."
+      uses: golangci/golangci-lint-action@v2.5.2
+      with:
+        only-new-issues: true
+        skip-go-installation: true

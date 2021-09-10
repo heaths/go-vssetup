@@ -9,18 +9,39 @@ import (
 )
 
 func main() {
-	var all bool
-	flag.BoolVar(&all, "all", false, "Finds all instances even if they are incomplete and may not launch.")
+	var (
+		all  bool
+		path string
+	)
 
-	instances, err := vssetup.Instances(all)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
+	flag.BoolVar(&all, "all", false, "Finds all instances even if they are incomplete and may not launch.")
+	flag.StringVar(&path, "path", "", "Gets an instance for the given path, if any defined for that path.")
+
+	var instances []vssetup.Instance
+	if path != "" {
+		instance, err := vssetup.InstanceForPath(path)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+
+		instances = []vssetup.Instance{*instance}
+	} else {
+		var err error
+		instances, err = vssetup.Instances(all)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
 	}
 
-	for _, instance := range instances {
-		if instanceId, err := instance.InstanceId(); err == nil {
-			fmt.Println("InstanceId =", instanceId)
+	for i, instance := range instances {
+		if i > 0 {
+			fmt.Println()
+		}
+
+		if instanceID, err := instance.InstanceID(); err == nil {
+			fmt.Println("InstanceID =", instanceID)
 		}
 
 		if installDate, err := instance.InstallDate(); err == nil {
@@ -34,7 +55,5 @@ func main() {
 		if installationPath, err := instance.InstallationPath(); err == nil {
 			fmt.Println("InstallationPath =", installationPath)
 		}
-
-		fmt.Println()
 	}
 }

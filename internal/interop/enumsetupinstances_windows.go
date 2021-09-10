@@ -10,8 +10,6 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
-const S_FALSE = 1
-
 func (v *IEnumSetupInstances) Next(celt uint32) ([]*ISetupInstance, error) {
 	rgelt := make([]*ISetupInstance, celt)
 	var celtFetched uint32
