@@ -11,13 +11,13 @@ import (
 	"github.com/heaths/go-vssetup/internal/types"
 )
 
-func (v *ISetupInstance) GetInstanceId() (*uint16, error) { //nolint:stylecheck
-	var bstr *uint16
+func (v *ISetupInstance) GetInstanceId() (*types.Bstr, error) { //nolint:stylecheck
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstanceId,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 		0,
 	)
 
@@ -25,7 +25,7 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) { //nolint:stylecheck
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
 func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
@@ -45,13 +45,13 @@ func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
 	return &ft, nil
 }
 
-func (v *ISetupInstance) GetInstallationName() (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) GetInstallationName() (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallationName,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 		0,
 	)
 
@@ -59,16 +59,16 @@ func (v *ISetupInstance) GetInstallationName() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
-func (v *ISetupInstance) GetInstallationPath() (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) GetInstallationPath() (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallationPath,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 		0,
 	)
 
@@ -76,16 +76,16 @@ func (v *ISetupInstance) GetInstallationPath() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
-func (v *ISetupInstance) GetInstallationVersion() (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) GetInstallationVersion() (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallationVersion,
 		2,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 		0,
 	)
 
@@ -93,56 +93,56 @@ func (v *ISetupInstance) GetInstallationVersion() (*uint16, error) {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
-func (v *ISetupInstance) GetDisplayName(lcid uint32) (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) GetDisplayName(lcid uint32) (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetDisplayName,
 		3,
 		uintptr(unsafe.Pointer(v)),
 		uintptr(lcid),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 	)
 
 	if hr != 0 {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
-func (v *ISetupInstance) GetDescription(lcid uint32) (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) GetDescription(lcid uint32) (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetDescription,
 		3,
 		uintptr(unsafe.Pointer(v)),
 		uintptr(lcid),
-		uintptr(unsafe.Pointer(&bstr)),
+		uintptr(bstr.Addr()),
 	)
 
 	if hr != 0 {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }
 
-func (v *ISetupInstance) ResolvePath(pwszRelativePath *uint16) (*uint16, error) {
-	var bstr *uint16
+func (v *ISetupInstance) ResolvePath(pwszRelativePath *types.Bstr) (*types.Bstr, error) {
+	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().ResolvePath,
 		3,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(pwszRelativePath)),
-		uintptr(unsafe.Pointer(&bstr)),
+		pwszRelativePath.Pointer(),
+		bstr.Addr(),
 	)
 
 	if hr != 0 {
 		return nil, ole.NewError(hr)
 	}
 
-	return bstr, nil
+	return &bstr, nil
 }

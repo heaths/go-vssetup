@@ -3,7 +3,10 @@
 
 package interop
 
-import "github.com/go-ole/go-ole"
+import (
+	"github.com/go-ole/go-ole"
+	"github.com/heaths/go-vssetup/internal/types"
+)
 
 func (v *ISetupConfiguration) EnumInstances() (*IEnumSetupInstances, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
@@ -13,7 +16,7 @@ func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, e
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
-func (v *ISetupConfiguration) GetInstanceForPath(path *int16) (*ISetupInstance, error) {
+func (v *ISetupConfiguration) GetInstanceForPath(path *types.Bstr) (*ISetupInstance, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 

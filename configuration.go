@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
+	"github.com/heaths/go-vssetup/internal/types"
 )
 
 type query struct {
@@ -79,7 +80,7 @@ func InstanceForPath(path string) (*Instance, error) {
 		return nil, nil
 	}
 
-	bstr := ole.SysAllocString(path)
+	bstr := types.NewBstr(path)
 	if inst, err := v.GetInstanceForPath(bstr); inst == nil || err != nil {
 		return nil, err
 	} else {

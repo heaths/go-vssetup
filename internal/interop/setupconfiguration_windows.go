@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
+	"github.com/heaths/go-vssetup/internal/types"
 )
 
 func (v *ISetupConfiguration) EnumInstances() (*IEnumSetupInstances, error) {
@@ -44,7 +45,7 @@ func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, e
 	return i, nil
 }
 
-func (v *ISetupConfiguration) GetInstanceForPath(path *int16) (*ISetupInstance, error) {
+func (v *ISetupConfiguration) GetInstanceForPath(path *types.Bstr) (*ISetupInstance, error) {
 	var i *ISetupInstance
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstanceForPath,

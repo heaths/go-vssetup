@@ -8,6 +8,5 @@
             "mode": "auto",
             "program": "./cmd/vswhere"
         }
-
     ]
 }

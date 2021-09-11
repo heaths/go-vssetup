@@ -3,7 +3,6 @@ package vssetup
 import (
 	"time"
 
-	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 	"github.com/heaths/go-vssetup/internal/types"
 )
@@ -45,11 +44,12 @@ func (i *Instance) Description(lcid uint32) (string, error) {
 	return getLocalizedStringFunc(lcid, i.v.GetDescription)
 }
 
-func getStringFunc(f func() (*uint16, error)) (string, error) {
+func getStringFunc(f func() (*types.Bstr, error)) (string, error) {
 	if bstr, err := f(); err != nil {
 		return "", err
 	} else {
-		return ole.BstrToString(bstr), nil
+		defer bstr.Close()
+		return bstr.String(), nil
 	}
 }
 
@@ -61,10 +61,11 @@ func getTimeFunc(f func() (*types.Filetime, error)) (time.Time, error) {
 	}
 }
 
-func getLocalizedStringFunc(lcid uint32, f func(uint32) (*uint16, error)) (string, error) {
+func getLocalizedStringFunc(lcid uint32, f func(uint32) (*types.Bstr, error)) (string, error) {
 	if bstr, err := f(lcid); err != nil {
 		return "", err
 	} else {
-		return ole.BstrToString(bstr), nil
+		defer bstr.Close()
+		return bstr.String(), nil
 	}
 }
