@@ -63,9 +63,16 @@ jobs:
 
   check:
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     needs:
     - lint
     - test
     steps:
     - name: check
-      run: echo -e "\e[32mSuccess\e[0m"
+      run: |
+        if [[ "${{ needs.lint.result }}" == "success" && "${{ needs.test.result }}" == "success" ]]; then
+          echo -e "\e[32mSuccess\e[0m"
+        else
+          echo -e "\e[31mFailed\e[0m"
+          exit 1
+        fi
