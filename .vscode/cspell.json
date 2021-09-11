@@ -5,6 +5,7 @@
         "bstr",
         "clsid",
         "elems",
+        "launchable",
         "modoleaut",
         "nolint",
         "notimpl",
@@ -23,6 +24,12 @@
             "words": [
                 "golangci",
                 "goversion"
+            ]
+        },
+        {
+            "filename": "**/*.md",
+            "words": [
+                "println"
             ]
         }
     ]
