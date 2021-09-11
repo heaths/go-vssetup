@@ -4,7 +4,9 @@
     "words": [
         "bstr",
         "clsid",
+        "elems",
         "nolint",
+        "notimpl",
         "pwsz",
         "vssetup",
         "vtbl"

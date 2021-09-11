@@ -4,6 +4,7 @@ import (
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
+	"github.com/heaths/go-vssetup/internal/errors"
 	"github.com/heaths/go-vssetup/internal/interop"
 )
 
@@ -42,10 +43,10 @@ func Instances(all bool) ([]Instance, error) {
 
 	instances := make([]Instance, 0)
 	for {
-		if insts, err := e.Next(1); err != nil {
+		if elems, err := e.Next(1); err != nil {
 			return nil, err
-		} else if len(insts) == 1 {
-			instance := Instance{insts[0]}
+		} else if len(elems) == 1 {
+			instance := Instance{elems[0]}
 			instances = append(instances, instance)
 		} else {
 			break
@@ -64,13 +65,13 @@ func InstanceForCurrentProcess() (*Instance, error) {
 		return nil, nil
 	}
 
-	if inst, err := v.GetInstanceForCurrentProcess(); inst == nil || err != nil {
+	if instance, err := v.GetInstanceForCurrentProcess(); instance == nil || err != nil {
 		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
 	} else {
-		return &Instance{inst}, nil
+		return &Instance{instance}, nil
 	}
 }
 
@@ -83,13 +84,13 @@ func InstanceForPath(path string) (*Instance, error) {
 		return nil, nil
 	}
 
-	if inst, err := v.GetInstanceForPath(path); inst == nil || err != nil {
+	if instance, err := v.GetInstanceForPath(path); instance == nil || err != nil {
 		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
 	} else {
-		return &Instance{inst}, nil
+		return &Instance{instance}, nil
 	}
 }
 
@@ -98,7 +99,7 @@ func (q *query) init() (*interop.ISetupConfiguration2, error) {
 	if !q.didInit {
 		if err := ole.CoInitialize(0); err != nil {
 			if err.Error() == "" {
-				err = ole.NewErrorWithSubError(ole.E_NOTIMPL, "not implemented", err)
+				err = errors.NotImplemented(err)
 			} else if e, ok := err.(*ole.OleError); ok && e.Code() == ole.E_NOTIMPL {
 				// Likely not supported on the current platform, so don't try again.
 				q.didInit = true
@@ -109,7 +110,7 @@ func (q *query) init() (*interop.ISetupConfiguration2, error) {
 
 		if unk, err := ole.CreateInstance(interop.CLSID_SetupConfiguration, interop.IID_ISetupConfiguration2); err != nil {
 			if err.Error() == "" {
-				q.err = ole.NewErrorWithSubError(ole.E_NOTIMPL, "not implemented", err)
+				q.err = errors.NotImplemented(err)
 			} else if e, ok := err.(*ole.OleError); ok && e.Code() == interop.REGDB_E_CLASSNOTREG {
 				// No error. Assume no instances.
 			} else {
