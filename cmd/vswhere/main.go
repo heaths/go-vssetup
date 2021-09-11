@@ -1,38 +1,53 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
 	"github.com/heaths/go-vssetup"
 	"github.com/heaths/go-vssetup/internal/formatting"
+	"github.com/spf13/cobra"
 )
 
+type options struct {
+	all  bool
+	path string
+}
+
 func main() {
-	var (
-		all  bool
-		path string
-	)
+	opts := options{}
+	root := cobra.Command{
+		Use: "Locates instances of Visual Studio",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
 
-	flag.BoolVar(&all, "all", false, "Finds all instances even if they are incomplete and may not launch.")
-	flag.StringVar(&path, "path", "", "Gets an instance for the given path, if any defined for that path.")
+			return run(&opts)
+		},
+	}
 
+	root.Flags().BoolVar(&opts.all, "all", false, "Finds all instances even if they are incomplete and may not launch.")
+	root.Flags().StringVar(&opts.path, "path", "", "Gets an instance for the given path, if any defined for that path.")
+
+	if err := root.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(opts *options) error {
 	var instances []vssetup.Instance
-	if path != "" {
-		instance, err := vssetup.InstanceForPath(path)
-		if err != nil {
-			fmt.Println("Error:", err)
-			os.Exit(1)
+	if opts.path != "" {
+		if instance, err := vssetup.InstanceForPath(opts.path); err != nil {
+			return err
+		} else if instance == nil {
+			return nil
+		} else {
+			instances = []vssetup.Instance{*instance}
 		}
-
-		instances = []vssetup.Instance{*instance}
 	} else {
 		var err error
-		instances, err = vssetup.Instances(all)
+		instances, err = vssetup.Instances(opts.all)
 		if err != nil {
-			fmt.Println("Error:", err)
-			os.Exit(1)
+			return err
 		}
 	}
 
@@ -43,4 +58,6 @@ func main() {
 
 		formatting.PrintInstance(os.Stdout, &instance)
 	}
+
+	return nil
 }

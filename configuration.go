@@ -65,6 +65,9 @@ func InstanceForCurrentProcess() (*Instance, error) {
 	}
 
 	if inst, err := v.GetInstanceForCurrentProcess(); inst == nil || err != nil {
+		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
+			return nil, nil
+		}
 		return nil, err
 	} else {
 		return &Instance{inst}, nil
@@ -81,7 +84,12 @@ func InstanceForPath(path string) (*Instance, error) {
 	}
 
 	bstr := types.NewBstr(path)
+	defer bstr.Close()
+
 	if inst, err := v.GetInstanceForPath(bstr); inst == nil || err != nil {
+		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
+			return nil, nil
+		}
 		return nil, err
 	} else {
 		return &Instance{inst}, nil

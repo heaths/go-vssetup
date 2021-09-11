@@ -24,7 +24,9 @@ func NewBstr(s string) *Bstr {
 }
 
 func (b *Bstr) Close() {
-	sysFreeString(b.val)
+	if err := sysFreeString(b.val); err != nil {
+		panic(err)
+	}
 }
 
 // Work around https://github.com/go-ole/go-ole/issues/221

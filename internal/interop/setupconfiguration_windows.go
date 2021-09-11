@@ -51,7 +51,7 @@ func (v *ISetupConfiguration) GetInstanceForPath(path *types.Bstr) (*ISetupInsta
 		v.VTable().GetInstanceForPath,
 		3,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(path)),
+		path.Pointer(),
 		uintptr(unsafe.Pointer(&i)),
 	)
 
