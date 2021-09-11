@@ -20,11 +20,8 @@ var q query
 // Set parameter all to true to enumerate all instances whether launchable or not.
 func Instances(all bool) ([]*Instance, error) {
 	v, err := q.init()
-	if err != nil {
+	if v == nil {
 		return nil, err
-	} else if v == nil {
-		// Assume no instances.
-		return nil, nil
 	}
 
 	var e *interop.IEnumSetupInstances
@@ -59,14 +56,12 @@ func Instances(all bool) ([]*Instance, error) {
 // InstanceForCurrentProcess returns an *Instance for the current process or nil if none found.
 func InstanceForCurrentProcess() (*Instance, error) {
 	v, err := q.init()
-	if err != nil {
+	if v == nil {
 		return nil, err
-	} else if v == nil {
-		return nil, nil
 	}
 
 	if instance, err := v.GetInstanceForCurrentProcess(); instance == nil || err != nil {
-		if err, ok := err.(*errors.Error); ok && err.Code() == interop.E_NOTFOUND {
+		if err, ok := err.(errors.ComError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
@@ -78,14 +73,12 @@ func InstanceForCurrentProcess() (*Instance, error) {
 // InstanceForPath returns an *Instance for the given path or nil if none found.
 func InstanceForPath(path string) (*Instance, error) {
 	v, err := q.init()
-	if err != nil {
+	if v == nil {
 		return nil, err
-	} else if v == nil {
-		return nil, nil
 	}
 
 	if instance, err := v.GetInstanceForPath(path); instance == nil || err != nil {
-		if err, ok := err.(*errors.Error); ok && err.Code() == interop.E_NOTFOUND {
+		if err, ok := err.(errors.ComError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
@@ -98,24 +91,22 @@ func (q *query) init() (*interop.ISetupConfiguration2, error) {
 	// TODO: Consider runtime.SetFinalizer to Release() and CoUninitialize() and pass parent references to each child.
 	if !q.didInit {
 		if err := ole.CoInitialize(0); err != nil {
-			if err.Error() == "" {
-				err = errors.NotImplemented(err)
-			} else if e, ok := err.(*errors.Error); ok && e.Code() == ole.E_NOTIMPL {
+			if e, ok := err.(errors.ComError); ok && e.Code() == ole.E_NOTIMPL {
 				// Likely not supported on the current platform, so don't try again.
 				q.didInit = true
+				return nil, nil
 			}
 
 			return nil, err
 		}
 
 		if unk, err := ole.CreateInstance(interop.CLSID_SetupConfiguration, interop.IID_ISetupConfiguration2); err != nil {
-			if err.Error() == "" {
-				q.err = errors.NotImplemented(err)
-			} else if e, ok := err.(*errors.Error); ok && e.Code() == interop.REGDB_E_CLASSNOTREG {
-				// No error. Assume no instances.
-			} else {
-				q.err = err
+			if e, ok := err.(errors.ComError); ok && e.Code() == interop.REGDB_E_CLASSNOTREG {
+				// Setup API not registered currently, but try again later. Assume no instances.
+				return nil, nil
 			}
+
+			q.err = err
 		} else {
 			q.v = (*interop.ISetupConfiguration2)(unsafe.Pointer(unk))
 		}

@@ -2,6 +2,12 @@ package errors
 
 import "github.com/go-ole/go-ole"
 
+type ComError interface {
+	error
+	Code() uintptr
+	SubError() error
+}
+
 type Error struct {
 	code        uintptr
 	description string
