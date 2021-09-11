@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/heaths/go-vssetup"
+	"github.com/heaths/go-vssetup/internal/formatting"
 )
 
 func main() {
@@ -40,29 +41,6 @@ func main() {
 			fmt.Println()
 		}
 
-		if s, err := instance.InstanceID(); err == nil {
-			fmt.Println("InstanceID =", s)
-		}
-
-		if d, err := instance.InstallDate(); err == nil {
-			fmt.Println("InstallDate =", d)
-		}
-
-		if s, err := instance.InstallationName(); err == nil {
-			fmt.Println("InstallationName =", s)
-		}
-
-		if s, err := instance.InstallationPath(); err == nil {
-			fmt.Println("InstallationPath =", s)
-		}
-
-		lcid := vssetup.Locale()
-		if s, err := instance.DisplayName(lcid); err == nil {
-			fmt.Println("DisplayName =", s)
-		}
-
-		if s, err := instance.Description(lcid); err == nil {
-			fmt.Println("Description =", s)
-		}
+		formatting.PrintInstance(os.Stdout, &instance)
 	}
 }
