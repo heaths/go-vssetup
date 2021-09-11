@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
+	"github.com/heaths/go-vssetup/internal/types"
 )
 
 // Instance contains information about a Visual Studio 2017 or newer product.
@@ -13,51 +14,55 @@ type Instance struct {
 }
 
 // InstanceID gets the unique, machine-specific ID for the Instance.
-func (instance *Instance) InstanceID() (string, error) {
-	if bstr, err := instance.v.GetInstanceId(); err != nil {
+func (i *Instance) InstanceID() (string, error) {
+	return getStringFunc(i.v.GetInstanceId)
+}
+
+// InstallDate gets the date the Instance was installed.
+func (i *Instance) InstallDate() (time.Time, error) {
+	return getTimeFunc(i.v.GetInstallDate)
+}
+
+// InstallationName gets the family name and version of the Instance.
+func (i *Instance) InstallationName() (string, error) {
+	return getStringFunc(i.v.GetInstallationName)
+}
+
+// InstallationPath gets the root path where the Instance was installed.
+func (i *Instance) InstallationPath() (string, error) {
+	return getStringFunc(i.v.GetInstallationPath)
+}
+
+// DisplayName gets the localized name of the Instance,
+// or English if the name is not localized for the given Windows locale.
+func (i *Instance) DisplayName(lcid uint32) (string, error) {
+	return getLocalizedStringFunc(lcid, i.v.GetDisplayName)
+}
+
+// Description gets the localized description of the Instance.
+// or English if the name is not localized for the given Windows locale.
+func (i *Instance) Description(lcid uint32) (string, error) {
+	return getLocalizedStringFunc(lcid, i.v.GetDescription)
+}
+
+func getStringFunc(f func() (*uint16, error)) (string, error) {
+	if bstr, err := f(); err != nil {
 		return "", err
 	} else {
 		return ole.BstrToString(bstr), nil
 	}
 }
 
-// InstallDate gets the date the Instance was installed.
-func (instance *Instance) InstallDate() (time.Time, error) {
-	if ft, err := instance.v.GetInstallDate(); err != nil {
+func getTimeFunc(f func() (*types.Filetime, error)) (time.Time, error) {
+	if ft, err := f(); err != nil {
 		return time.Time{}, err
 	} else {
 		return ft.Time(), nil
 	}
 }
 
-// InstallationName gets the family name and version of the Instance.
-func (instance *Instance) InstallationName() (string, error) {
-	if bstr, err := instance.v.GetInstallationName(); err != nil {
-		return "", err
-	} else {
-		return ole.BstrToString(bstr), nil
-	}
-}
-
-// InstallationPath gets the root path where the Instance was installed.
-func (instance *Instance) InstallationPath() (string, error) {
-	if bstr, err := instance.v.GetInstallationPath(); err != nil {
-		return "", err
-	} else {
-		return ole.BstrToString(bstr), nil
-	}
-}
-
-func (instance *Instance) DisplayName(lcid uint32) (string, error) {
-	if bstr, err := instance.v.GetDisplayName(lcid); err != nil {
-		return "", err
-	} else {
-		return ole.BstrToString(bstr), nil
-	}
-}
-
-func (instance *Instance) Description(lcid uint32) (string, error) {
-	if bstr, err := instance.v.GetDescription(lcid); err != nil {
+func getLocalizedStringFunc(lcid uint32, f func(uint32) (*uint16, error)) (string, error) {
+	if bstr, err := f(lcid); err != nil {
 		return "", err
 	} else {
 		return ole.BstrToString(bstr), nil

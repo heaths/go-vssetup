@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
+	"github.com/heaths/go-vssetup/internal/types"
 )
 
 func (v *ISetupInstance) GetInstanceId() (*uint16, error) { //nolint:stylecheck
@@ -27,8 +28,8 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) { //nolint:stylecheck
 	return bstr, nil
 }
 
-func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
-	var ft filetime
+func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
+	var ft types.Filetime
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstallDate,
 		2,

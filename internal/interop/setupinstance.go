@@ -5,6 +5,7 @@ package interop
 
 import (
 	"github.com/go-ole/go-ole"
+	"github.com/heaths/go-vssetup/internal/types"
 )
 
 //nolint:stylecheck
@@ -12,7 +13,7 @@ func (v *ISetupInstance) GetInstanceId() (*uint16, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
-func (v *ISetupInstance) GetInstallDate() (*filetime, error) {
+func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
