@@ -6,7 +6,7 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
-func Test_NotImplemented(t *testing.T) {
+func TestNotImplemented(t *testing.T) {
 	tests := []struct {
 		name  string
 		err   error
@@ -36,7 +36,7 @@ func Test_NotImplemented(t *testing.T) {
 	}
 }
 
-func Test_ComError_Compatibility(t *testing.T) {
+func TestComError_Compatibility(t *testing.T) {
 	tests := []struct {
 		name  string
 		err   ComError

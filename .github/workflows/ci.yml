@@ -23,6 +23,7 @@ jobs:
         - os: windows-latest
           goos: windows
           lint: true
+          args: ["--tags=live"]
         - os: ubuntu-latest
           goos: linux
           lint: true
@@ -36,7 +37,7 @@ jobs:
       with:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
-      run: GOOS=${{ matrix.goos }} go test ./... -cover
+      run: GOOS=${{ matrix.goos }} go test ./... -cover ${{ join(matrix.args, ' ') }}
 
   lint:
     runs-on: ${{ matrix.os }}

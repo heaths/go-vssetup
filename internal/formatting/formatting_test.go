@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-func Benchmark_printString(b *testing.B) {
+func BenchmarkPrintString(b *testing.B) {
 	w := &bytes.Buffer{}
 	for i := 0; i < b.N; i++ {
 		printString(w, "a", a)
 	}
 }
 
-func Test_printString(t *testing.T) {
+func TestPrintString(t *testing.T) {
 	w := &bytes.Buffer{}
 	printString(w, "a", a)
 
@@ -24,14 +24,14 @@ func Test_printString(t *testing.T) {
 	}
 }
 
-func Benchmark_printStringFunc(b *testing.B) {
+func BenchmarkPrintStringFunc(b *testing.B) {
 	w := &bytes.Buffer{}
 	for i := 0; i < b.N; i++ {
 		printStringFunc(w, a)
 	}
 }
 
-func Test_printStringFunc(t *testing.T) {
+func TestPrintStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	printStringFunc(w, a)
 
@@ -40,7 +40,7 @@ func Test_printStringFunc(t *testing.T) {
 	}
 }
 
-func Test_printStringFunc_Method(t *testing.T) {
+func TestPrintStringFunc_Method(t *testing.T) {
 	w := &bytes.Buffer{}
 	s := str{"1"}
 	printStringFunc(w, s.String)
@@ -50,7 +50,7 @@ func Test_printStringFunc_Method(t *testing.T) {
 	}
 }
 
-func Test_printTimeFunc(t *testing.T) {
+func TestPrintTimeFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	printTimeFunc(w, b)
 
@@ -59,7 +59,7 @@ func Test_printTimeFunc(t *testing.T) {
 	}
 }
 
-func Test_printLocalizedStringFunc(t *testing.T) {
+func TestPrintLocalizedStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	printLocalizedStringFunc(w, 1033, c)
 

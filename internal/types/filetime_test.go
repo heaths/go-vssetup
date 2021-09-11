@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Test_Time(t *testing.T) {
+func TestTime(t *testing.T) {
 	ft := &Filetime{
 		lowDateTime:  3577643008,
 		highDateTime: 27111902,
