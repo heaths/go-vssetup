@@ -10,6 +10,9 @@
         "notimpl",
         "oleaut",
         "pwsz",
+        "regdb",
+        "rgelt",
+        "uninitialize",
         "vssetup",
         "vswhere",
         "vtbl"

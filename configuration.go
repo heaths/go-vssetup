@@ -18,13 +18,13 @@ var q query
 
 // Instances returns an array of Instance for Visual Studio 2017 and newer products.
 // Set parameter all to true to enumerate all instances whether launchable or not.
-func Instances(all bool) ([]Instance, error) {
+func Instances(all bool) ([]*Instance, error) {
 	v, err := q.init()
 	if err != nil {
 		return nil, err
 	} else if v == nil {
 		// Assume no instances.
-		return []Instance{}, nil
+		return nil, nil
 	}
 
 	var e *interop.IEnumSetupInstances
@@ -41,12 +41,12 @@ func Instances(all bool) ([]Instance, error) {
 	}
 	defer e.Release()
 
-	instances := make([]Instance, 0)
+	instances := make([]*Instance, 0)
 	for {
 		if elems, err := e.Next(1); err != nil {
 			return nil, err
 		} else if len(elems) == 1 {
-			instance := Instance{elems[0]}
+			instance := newInstance(elems[0])
 			instances = append(instances, instance)
 		} else {
 			break
@@ -71,7 +71,7 @@ func InstanceForCurrentProcess() (*Instance, error) {
 		}
 		return nil, err
 	} else {
-		return &Instance{instance}, nil
+		return newInstance(instance), nil
 	}
 }
 
@@ -90,7 +90,7 @@ func InstanceForPath(path string) (*Instance, error) {
 		}
 		return nil, err
 	} else {
-		return &Instance{instance}, nil
+		return newInstance(instance), nil
 	}
 }
 
