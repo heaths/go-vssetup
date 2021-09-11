@@ -5,8 +5,10 @@
         "bstr",
         "clsid",
         "elems",
+        "modoleaut",
         "nolint",
         "notimpl",
+        "oleaut",
         "pwsz",
         "vssetup",
         "vtbl"
