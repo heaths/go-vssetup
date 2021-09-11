@@ -24,10 +24,10 @@ jobs:
       with:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
-      run: GOOS=${{ matrix.goos }} go test ./...
+      run: go test ./...
     - name: build
-      run: GOOS=${{ matrix.goos }} go build -o ./bin/vswhere.exe ./cmd/vswhere --clobber
+      run: go build -o ./bin/vswhere.exe ./cmd/vswhere --clobber
     - name: publish
-      run: gh release upload ${{ GITHUB_REF#refs/tags/ }} ./bin/vswhere.exe
+      run: gh release upload ${GITHUB_REF#refs/tags/} ./bin/vswhere.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
