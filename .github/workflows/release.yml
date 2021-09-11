@@ -1,0 +1,33 @@
+name: release
+
+on:
+  release:
+    types:
+    - created
+    - published
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GOVERSION: 1.17
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: install go ${{ env.GOVERSION }}
+      uses: actions/setup-go@v2.1.4
+      with:
+        go-version: '^${{ env.GOVERSION }}'
+    - name: test
+      run: GOOS=${{ matrix.goos }} go test ./...
+    - name: build
+      run: GOOS=${{ matrix.goos }} go build -o ./bin/vswhere.exe ./cmd/vswhere --clobber
+    - name: publish
+      run: gh release upload ${{ GITHUB_REF#refs/tags/ }} ./bin/vswhere.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -11,6 +11,16 @@
         "oleaut",
         "pwsz",
         "vssetup",
+        "vswhere",
         "vtbl"
+    ],
+    "overrides": [
+        {
+            "filename": "**/.github/**/{*.yml,*.yaml}",
+            "words": [
+                "golangci",
+                "goversion"
+            ]
+        }
     ]
 }
