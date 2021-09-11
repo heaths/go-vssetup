@@ -66,7 +66,7 @@ func InstanceForCurrentProcess() (*Instance, error) {
 	}
 
 	if instance, err := v.GetInstanceForCurrentProcess(); instance == nil || err != nil {
-		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
+		if err, ok := err.(*errors.Error); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
@@ -85,7 +85,7 @@ func InstanceForPath(path string) (*Instance, error) {
 	}
 
 	if instance, err := v.GetInstanceForPath(path); instance == nil || err != nil {
-		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
+		if err, ok := err.(*errors.Error); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
 		return nil, err
@@ -100,7 +100,7 @@ func (q *query) init() (*interop.ISetupConfiguration2, error) {
 		if err := ole.CoInitialize(0); err != nil {
 			if err.Error() == "" {
 				err = errors.NotImplemented(err)
-			} else if e, ok := err.(*ole.OleError); ok && e.Code() == ole.E_NOTIMPL {
+			} else if e, ok := err.(*errors.Error); ok && e.Code() == ole.E_NOTIMPL {
 				// Likely not supported on the current platform, so don't try again.
 				q.didInit = true
 			}
@@ -111,7 +111,7 @@ func (q *query) init() (*interop.ISetupConfiguration2, error) {
 		if unk, err := ole.CreateInstance(interop.CLSID_SetupConfiguration, interop.IID_ISetupConfiguration2); err != nil {
 			if err.Error() == "" {
 				q.err = errors.NotImplemented(err)
-			} else if e, ok := err.(*ole.OleError); ok && e.Code() == interop.REGDB_E_CLASSNOTREG {
+			} else if e, ok := err.(*errors.Error); ok && e.Code() == interop.REGDB_E_CLASSNOTREG {
 				// No error. Assume no instances.
 			} else {
 				q.err = err
