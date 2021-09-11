@@ -130,13 +130,18 @@ func (v *ISetupInstance) GetDescription(lcid uint32) (*types.Bstr, error) {
 	return &bstr, nil
 }
 
-func (v *ISetupInstance) ResolvePath(pwszRelativePath *uint16) (*types.Bstr, error) {
+func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
+	wcs, err := syscall.UTF16PtrFromString(relativePath)
+	if err != nil {
+		return nil, err
+	}
+
 	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(
 		v.VTable().ResolvePath,
 		3,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(pwszRelativePath)),
+		uintptr(unsafe.Pointer(wcs)),
 		bstr.Addr(),
 	)
 

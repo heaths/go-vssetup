@@ -44,13 +44,18 @@ func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, e
 	return i, nil
 }
 
-func (v *ISetupConfiguration) GetInstanceForPath(path *uint16) (*ISetupInstance, error) {
+func (v *ISetupConfiguration) GetInstanceForPath(path string) (*ISetupInstance, error) {
+	wcs, err := syscall.UTF16PtrFromString(path)
+	if err != nil {
+		return nil, err
+	}
+
 	var i *ISetupInstance
 	hr, _, _ := syscall.Syscall(
 		v.VTable().GetInstanceForPath,
 		3,
 		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(path)),
+		uintptr(unsafe.Pointer(wcs)),
 		uintptr(unsafe.Pointer(&i)),
 	)
 

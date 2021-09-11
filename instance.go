@@ -44,6 +44,15 @@ func (i *Instance) Description(lcid uint32) (string, error) {
 	return getLocalizedStringFunc(lcid, i.v.GetDescription)
 }
 
+// MakePath returns the combined Instance installation path with the given child path.
+func (i *Instance) MakePath(path string) (string, error) {
+	if bstr, err := i.v.ResolvePath(path); err != nil {
+		return "", err
+	} else {
+		return bstr.String(), nil
+	}
+}
+
 func getStringFunc(f func() (*types.Bstr, error)) (string, error) {
 	if bstr, err := f(); err != nil {
 		return "", err

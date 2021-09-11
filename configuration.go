@@ -1,7 +1,6 @@
 package vssetup
 
 import (
-	"syscall"
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
@@ -83,12 +82,7 @@ func InstanceForPath(path string) (*Instance, error) {
 		return nil, nil
 	}
 
-	wcs, err := syscall.UTF16PtrFromString(path)
-	if err != nil {
-		return nil, err
-	}
-
-	if inst, err := v.GetInstanceForPath(wcs); inst == nil || err != nil {
+	if inst, err := v.GetInstanceForPath(path); inst == nil || err != nil {
 		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
