@@ -39,9 +39,9 @@ jobs:
       with:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
-      run: GOOS=${{ matrix.goos }} go test ./... -cover ${{ join(matrix.args, ' ') }}
+      run: GOOS=${{ matrix.goos }} go test ./... -cover -v ${{ join(matrix.args, ' ') }}
     - name: lint
-      if: ${{ !cancelled() && matrix.lint == 'true' }}
+      if: ${{ !cancelled() && matrix.lint }}
       uses: golangci/golangci-lint-action@v2.5.2
       with:
         only-new-issues: true
