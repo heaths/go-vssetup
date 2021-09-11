@@ -23,6 +23,9 @@ jobs:
         - os: windows-latest
           goos: windows
           lint: true
+          args:
+          # Depends on the hosted agent having Visual Studio 2019 installed.
+          - "--tags=live"
         - os: ubuntu-latest
           goos: linux
           lint: true
@@ -36,26 +39,9 @@ jobs:
       with:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
-      run: GOOS=${{ matrix.goos }} go test ./... -cover
-
-  lint:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-        - os: windows-latest
-          goos: windows
-        - os: ubuntu-latest
-          goos: linux
-    steps:
-    - name: checkout
-      uses: actions/checkout@v2
-    - name: install go ${{ env.GOVERSION }}
-      uses: actions/setup-go@v2.1.4
-      with:
-        go-version: '^${{ env.GOVERSION }}'
+      run: GOOS=${{ matrix.goos }} go test ./... -cover -v ${{ join(matrix.args, ' ') }}
     - name: lint
-      if: ${{ matrix.lint == 'true' }}
+      if: ${{ !cancelled() && matrix.lint }}
       uses: golangci/golangci-lint-action@v2.5.2
       with:
         only-new-issues: true
@@ -63,14 +49,13 @@ jobs:
 
   check:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs:
-    - lint
     - test
     steps:
     - name: check
       run: |
-        if [[ "${{ needs.lint.result }}" == "success" && "${{ needs.test.result }}" == "success" ]]; then
+        if [[ "${{ needs.test.result }}" == "success" ]]; then
           echo -e "\e[32mSuccess\e[0m"
         else
           echo -e "\e[31mFailed\e[0m"
