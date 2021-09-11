@@ -11,6 +11,7 @@ var (
 	procGetUserDefaultLCID = modkernel32.NewProc("GetUserDefaultLCID")
 )
 
+// Locale on Windows returns the current user's locale e.g., 1033 for en-us.
 func Locale() uint32 {
 	lcid, _, _ := syscall.Syscall(
 		procGetUserDefaultLCID.Addr(),

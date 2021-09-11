@@ -38,6 +38,7 @@ func Instances(all bool) ([]Instance, error) {
 			return nil, err
 		}
 	}
+	defer e.Release()
 
 	instances := make([]Instance, 0)
 	for {
@@ -93,6 +94,7 @@ func InstanceForPath(path string) (*Instance, error) {
 }
 
 func (q *query) init() (*interop.ISetupConfiguration2, error) {
+	// TODO: Consider runtime.SetFinalizer to Release() and CoUninitialize() and pass parent references to each child.
 	if !q.didInit {
 		if err := ole.CoInitialize(0); err != nil {
 			if err.Error() == "" {
