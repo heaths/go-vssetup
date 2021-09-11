@@ -3,7 +3,6 @@ name: release
 on:
   release:
     types:
-    - created
     - published
 
 defaults:
@@ -26,8 +25,8 @@ jobs:
     - name: test
       run: go test ./...
     - name: build
-      run: go build -o ./bin/vswhere.exe ./cmd/vswhere --clobber
+      run: go build -o ./bin/vswhere.exe ./cmd/vswhere
     - name: publish
-      run: gh release upload ${GITHUB_REF#refs/tags/} ./bin/vswhere.exe
+      run: gh release upload ${GITHUB_REF#refs/tags/} ./bin/vswhere.exe --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
