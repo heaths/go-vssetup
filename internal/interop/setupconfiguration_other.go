@@ -16,7 +16,7 @@ func (v *ISetupConfiguration) GetInstanceForCurrentProcess() (*ISetupInstance, e
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
-func (v *ISetupConfiguration) GetInstanceForPath(path *types.Bstr) (*ISetupInstance, error) {
+func (v *ISetupConfiguration) GetInstanceForPath(path *uint16) (*ISetupInstance, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 

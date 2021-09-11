@@ -18,6 +18,7 @@ var (
 )
 
 func NewBstr(s string) *Bstr {
+	// TODO: Instead of implementing io.Closer, consider using runtime.SetFinalizer to call SysFreeString().
 	return &Bstr{
 		val: sysAllocString(s),
 	}

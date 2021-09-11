@@ -37,6 +37,6 @@ func (v *ISetupInstance) GetDescription(lcid uint32) (*types.Bstr, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }
 
-func (v *ISetupInstance) ResolvePath(pwszRelativePath *types.Bstr) (*types.Bstr, error) {
+func (v *ISetupInstance) ResolvePath(pwszRelativePath *uint16) (*types.Bstr, error) {
 	return nil, ole.NewErrorWithDescription(ole.E_NOTIMPL, "not implemented")
 }

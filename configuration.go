@@ -1,11 +1,11 @@
 package vssetup
 
 import (
+	"syscall"
 	"unsafe"
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
-	"github.com/heaths/go-vssetup/internal/types"
 )
 
 type query struct {
@@ -83,10 +83,12 @@ func InstanceForPath(path string) (*Instance, error) {
 		return nil, nil
 	}
 
-	bstr := types.NewBstr(path)
-	defer bstr.Close()
+	wcs, err := syscall.UTF16PtrFromString(path)
+	if err != nil {
+		return nil, err
+	}
 
-	if inst, err := v.GetInstanceForPath(bstr); inst == nil || err != nil {
+	if inst, err := v.GetInstanceForPath(wcs); inst == nil || err != nil {
 		if err, ok := err.(*ole.OleError); ok && err.Code() == interop.E_NOTFOUND {
 			return nil, nil
 		}
