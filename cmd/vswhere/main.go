@@ -34,14 +34,14 @@ func main() {
 }
 
 func run(opts *options) error {
-	var instances []vssetup.Instance
+	var instances []*vssetup.Instance
 	if opts.path != "" {
 		if instance, err := vssetup.InstanceForPath(opts.path); err != nil {
 			return err
 		} else if instance == nil {
 			return nil
 		} else {
-			instances = []vssetup.Instance{*instance}
+			instances = []*vssetup.Instance{instance}
 		}
 	} else {
 		var err error
@@ -56,7 +56,7 @@ func run(opts *options) error {
 			fmt.Println()
 		}
 
-		formatting.PrintInstance(os.Stdout, &instance)
+		formatting.PrintInstance(os.Stdout, instance)
 	}
 
 	return nil

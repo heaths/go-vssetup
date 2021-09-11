@@ -4,6 +4,7 @@
 package types
 
 import (
+	"runtime"
 	"syscall"
 	"unsafe"
 
@@ -18,16 +19,25 @@ var (
 )
 
 func NewBstr(s string) *Bstr {
-	// TODO: Instead of implementing io.Closer, consider using runtime.SetFinalizer to call SysFreeString().
-	return &Bstr{
+	bstr := &Bstr{
 		val: sysAllocString(s),
 	}
+
+	runtime.SetFinalizer(bstr, (*Bstr).Close)
+	return bstr
 }
 
-func (b *Bstr) Close() {
-	if err := sysFreeString(b.val); err != nil {
-		panic(err)
+func (b *Bstr) Close() error {
+	if b.val != nil {
+		if err := sysFreeString(b.val); err != nil {
+			return err
+		}
+
+		b.val = nil
+		runtime.SetFinalizer(b, nil)
 	}
+
+	return nil
 }
 
 // Work around https://github.com/go-ole/go-ole/issues/221

@@ -1,6 +1,7 @@
 package vssetup
 
 import (
+	"runtime"
 	"time"
 
 	"github.com/heaths/go-vssetup/internal/interop"
@@ -10,6 +11,24 @@ import (
 // Instance contains information about a Visual Studio 2017 or newer product.
 type Instance struct {
 	v *interop.ISetupInstance
+}
+
+func newInstance(v *interop.ISetupInstance) *Instance {
+	i := &Instance{v}
+
+	runtime.SetFinalizer(i, (*Instance).Close)
+	return i
+}
+
+// Close releases any resources used by this Instance immediately.
+func (i *Instance) Close() error {
+	if i.v != nil {
+		// Call IUnknown.Release() by leave v assigned to avoid AV exceptions.
+		i.v.Release()
+		runtime.SetFinalizer(i, nil)
+	}
+
+	return nil
 }
 
 // InstanceID gets the unique, machine-specific ID for the Instance.

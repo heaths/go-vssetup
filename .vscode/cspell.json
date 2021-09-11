@@ -4,9 +4,33 @@
     "words": [
         "bstr",
         "clsid",
+        "elems",
+        "launchable",
+        "modoleaut",
         "nolint",
+        "notimpl",
+        "oleaut",
         "pwsz",
+        "regdb",
+        "rgelt",
+        "uninitialize",
         "vssetup",
+        "vswhere",
         "vtbl"
+    ],
+    "overrides": [
+        {
+            "filename": "**/.github/**/{*.yml,*.yaml}",
+            "words": [
+                "golangci",
+                "goversion"
+            ]
+        },
+        {
+            "filename": "**/*.md",
+            "words": [
+                "println"
+            ]
+        }
     ]
 }
