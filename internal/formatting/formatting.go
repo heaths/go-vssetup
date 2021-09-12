@@ -9,17 +9,16 @@ import (
 	"time"
 
 	"github.com/heaths/go-vssetup"
+	"golang.org/x/text/language"
 )
 
-func PrintInstance(w io.Writer, i *vssetup.Instance) {
-	lcid := vssetup.Locale()
-
+func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
 	printStringFunc(w, i.InstanceID)
 	printTimeFunc(w, i.InstallDate)
 	printStringFunc(w, i.InstallationName)
 	printStringFunc(w, i.InstallationPath)
-	printLocalizedStringFunc(w, lcid, i.DisplayName)
-	printLocalizedStringFunc(w, lcid, i.Description)
+	printLocalizedStringFunc(w, locale, i.DisplayName)
+	printLocalizedStringFunc(w, locale, i.Description)
 }
 
 func nameOf(f interface{}) string {
@@ -50,9 +49,9 @@ func printTimeFunc(w io.Writer, f func() (time.Time, error)) {
 	}
 }
 
-func printLocalizedStringFunc(w io.Writer, lcid uint32, f func(uint32) (string, error)) {
+func printLocalizedStringFunc(w io.Writer, l language.Tag, f func(language.Tag) (string, error)) {
 	name := nameOf(f)
-	if t, err := f(lcid); err == nil {
+	if t, err := f(l); err == nil {
 		fmt.Fprintf(w, "%s = %s\n", name, t)
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"io"
 	"testing"
 	"time"
+
+	"golang.org/x/text/language"
 )
 
 func BenchmarkPrintString(b *testing.B) {
@@ -61,10 +63,10 @@ func TestPrintTimeFunc(t *testing.T) {
 
 func TestPrintLocalizedStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	printLocalizedStringFunc(w, 1033, c)
+	printLocalizedStringFunc(w, language.AmericanEnglish, c)
 
-	if w.String() != "c = 1033\n" {
-		t.Fatalf(`got "%s", expected "c = 1033"`, w.String())
+	if w.String() != "c = en-US\n" {
+		t.Fatalf(`got "%s", expected "c = en-US"`, w.String())
 	}
 }
 
@@ -83,8 +85,8 @@ func b() (time.Time, error) {
 	return time.Date(2021, 9, 10, 9, 00, 30, 0, time.UTC), nil
 }
 
-func c(lcid uint32) (string, error) {
-	return fmt.Sprint(lcid), nil
+func c(locale language.Tag) (string, error) {
+	return fmt.Sprint(locale), nil
 }
 
 type str struct {

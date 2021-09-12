@@ -6,6 +6,7 @@ import (
 
 	"github.com/heaths/go-vssetup/internal/interop"
 	"github.com/heaths/go-vssetup/internal/types"
+	"golang.org/x/text/language"
 )
 
 // Instance contains information about a Visual Studio 2017 or newer product.
@@ -52,15 +53,15 @@ func (i *Instance) InstallationPath() (string, error) {
 }
 
 // DisplayName gets the localized name of the Instance,
-// or English if the name is not localized for the given Windows locale.
-func (i *Instance) DisplayName(lcid uint32) (string, error) {
-	return getLocalizedStringFunc(lcid, i.v.GetDisplayName)
+// or English if the name is not localized for the given locale.
+func (i *Instance) DisplayName(locale language.Tag) (string, error) {
+	return getLocalizedStringFunc(locale, i.v.GetDisplayName)
 }
 
 // Description gets the localized description of the Instance.
-// or English if the name is not localized for the given Windows locale.
-func (i *Instance) Description(lcid uint32) (string, error) {
-	return getLocalizedStringFunc(lcid, i.v.GetDescription)
+// or English if the name is not localized for the given locale.
+func (i *Instance) Description(locale language.Tag) (string, error) {
+	return getLocalizedStringFunc(locale, i.v.GetDescription)
 }
 
 // MakePath returns the combined Instance installation path with the given child path.
@@ -89,7 +90,8 @@ func getTimeFunc(f func() (*types.Filetime, error)) (time.Time, error) {
 	}
 }
 
-func getLocalizedStringFunc(lcid uint32, f func(uint32) (*types.Bstr, error)) (string, error) {
+func getLocalizedStringFunc(l language.Tag, f func(uint32) (*types.Bstr, error)) (string, error) {
+	lcid := lcid(l)
 	if bstr, err := f(lcid); err != nil {
 		return "", err
 	} else {
