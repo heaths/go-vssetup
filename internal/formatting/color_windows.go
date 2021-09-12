@@ -24,9 +24,12 @@ func IsColorTerminal(w io.Writer) bool {
 func enableVirtualTerminalProcessing(f *os.File) bool {
 	stdout := windows.Handle(f.Fd())
 
+	var err error
 	var originalMode uint32
-	windows.GetConsoleMode(stdout, &originalMode)
-	err := windows.SetConsoleMode(stdout, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+
+	if err = windows.GetConsoleMode(stdout, &originalMode); err == nil {
+		err = windows.SetConsoleMode(stdout, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+	}
 
 	return err == nil
 }
