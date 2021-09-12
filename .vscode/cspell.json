@@ -5,6 +5,7 @@
         "bstr",
         "clsid",
         "elems",
+        "isatty",
         "launchable",
         "lcid",
         "modoleaut",
