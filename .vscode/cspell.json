@@ -6,6 +6,7 @@
         "clsid",
         "elems",
         "launchable",
+        "lcid",
         "modoleaut",
         "nolint",
         "notimpl",

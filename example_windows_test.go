@@ -7,13 +7,13 @@ import (
 	"fmt"
 
 	"github.com/heaths/go-vssetup"
+	"golang.org/x/text/language"
 )
 
 func Example() {
 	instances, _ := vssetup.Instances(false)
 	for _, instance := range instances {
-		// Get the display name for en-us (LCID: 1033).
-		if s, err := instance.DisplayName(1033); err == nil {
+		if s, err := instance.DisplayName(language.AmericanEnglish); err == nil {
 			fmt.Println(s)
 		}
 	}

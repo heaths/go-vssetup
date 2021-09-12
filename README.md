@@ -1,6 +1,7 @@
 # Visual Studio Setup Configuration
 
 [![releases](https://img.shields.io/github/v/release/heaths/go-vssetup.svg?logo=github)](https://github.com/heaths/go-vssetup/releases/latest)
+[![reference](https://pkg.go.dev/badge/github.com/heaths/go-vssetup.svg)](https://pkg.go.dev/github.com/heaths/go-vssetup)
 [![ci](https://github.com/heaths/go-vssetup/actions/workflows/ci.yml/badge.svg)](https://github.com/heaths/go-vssetup/actions/workflows/ci.yml)
 
 [Microsoft Visual Studio](https://visualstudio.microsoft.com) 2017 and newer uses a new setup engine that allows multiple instances to be installed quickly and in different configuration. To enumerate these instances and find one that fulfills your requirements, the [Setup Configuration API](https://devblogs.microsoft.com/setup/documentation-available-for-the-setup-configuration-api) provides a set of interface. This crate provides a safe and idiomatic wrapper for [Go](https://golang.org).
