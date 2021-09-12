@@ -28,14 +28,16 @@ func TestPrintString(t *testing.T) {
 
 func BenchmarkPrintStringFunc(b *testing.B) {
 	w := &bytes.Buffer{}
+	p := newPrinter(w)
 	for i := 0; i < b.N; i++ {
-		printStringFunc(w, a)
+		p.printStringFunc(a)
 	}
 }
 
 func TestPrintStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	printStringFunc(w, a)
+	p := newPrinter(w)
+	p.printStringFunc(a)
 
 	if w.String() != "a = 1\n" {
 		t.Fatalf(`got "%s", expected "a = 1"`, w.String())
@@ -44,8 +46,10 @@ func TestPrintStringFunc(t *testing.T) {
 
 func TestPrintStringFunc_Method(t *testing.T) {
 	w := &bytes.Buffer{}
+	p := newPrinter(w)
 	s := str{"1"}
-	printStringFunc(w, s.String)
+
+	p.printStringFunc(s.String)
 
 	if w.String() != "String = 1\n" {
 		t.Fatalf(`got "%s", expected "String = 1"`, w.String())
@@ -54,7 +58,8 @@ func TestPrintStringFunc_Method(t *testing.T) {
 
 func TestPrintTimeFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	printTimeFunc(w, b)
+	p := newPrinter(w)
+	p.printTimeFunc(b)
 
 	if w.String() != "b = 2021-09-10 09:00:30 +0000 UTC\n" {
 		t.Fatalf(`got "%s", expected "b = 2021-09-10 09:00:30 +0000 UTC"`, w.String())
@@ -63,7 +68,8 @@ func TestPrintTimeFunc(t *testing.T) {
 
 func TestPrintLocalizedStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	printLocalizedStringFunc(w, language.AmericanEnglish, c)
+	p := newPrinter(w)
+	p.printLocalizedStringFunc(language.AmericanEnglish, c)
 
 	if w.String() != "c = en-US\n" {
 		t.Fatalf(`got "%s", expected "c = en-US"`, w.String())
