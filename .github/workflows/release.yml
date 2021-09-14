@@ -23,7 +23,7 @@ jobs:
       with:
         go-version: '^${{ env.GOVERSION }}'
     - name: test
-      run: go test ./... --tags=live
+      run: go test ./... -v --tags=live
     - name: build
       run: go build -o ./bin/vswhere.exe ./cmd/vswhere
     - name: publish
