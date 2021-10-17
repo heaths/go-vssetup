@@ -151,3 +151,88 @@ func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 
 	return &bstr, nil
 }
+
+func (v *ISetupInstance2) GetState() (uint32, error) {
+	var state uint32
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetState,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&state)),
+		0,
+	)
+
+	if hr != 0 {
+		return 0, ole.NewError(hr)
+	}
+
+	return state, nil
+}
+
+func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
+	var bstr types.Bstr
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetProductPath,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(bstr.Addr()),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return &bstr, nil
+}
+
+func (v *ISetupInstance2) IsLaunchable() (bool, error) {
+	var b uint32
+	hr, _, _ := syscall.Syscall(
+		v.VTable().IsLaunchable,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&b)),
+		0,
+	)
+
+	if hr != 0 {
+		return false, ole.NewError(hr)
+	}
+
+	return b != 0, nil
+}
+
+func (v *ISetupInstance2) IsComplete() (bool, error) {
+	var b uint32
+	hr, _, _ := syscall.Syscall(
+		v.VTable().IsComplete,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&b)),
+		0,
+	)
+
+	if hr != 0 {
+		return false, ole.NewError(hr)
+	}
+
+	return b != 0, nil
+}
+
+func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
+	var bstr types.Bstr
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetEnginePath,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(bstr.Addr()),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return &bstr, nil
+}
