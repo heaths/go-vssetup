@@ -31,8 +31,14 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
 	p.printTimeFunc(i.InstallDate)
 	p.printStringFunc(i.InstallationName)
 	p.printStringFunc(i.InstallationPath)
+	p.printStringFunc(i.ProductPath)
+	p.printStateFunc(i.State)
+	p.printBoolFunc(i.IsLaunchable)
+	p.printBoolFunc(i.IsComplete)
+	p.printBoolFunc(i.IsRebootRequired)
 	p.printLocalizedStringFunc(locale, i.DisplayName)
 	p.printLocalizedStringFunc(locale, i.Description)
+	p.printStringFunc(i.EnginePath)
 }
 
 func nameOf(f interface{}) string {
@@ -69,6 +75,20 @@ func newPrinter(w io.Writer) *printer {
 	}
 }
 
+func (p *printer) printBoolFunc(f func() (bool, error)) {
+	name := nameOf(f)
+	if b, err := f(); err == nil {
+		p.print(name, or(b, "1", "0"))
+	}
+}
+
+func (p *printer) printStateFunc(f func() (vssetup.InstanceState, error)) {
+	name := nameOf(f)
+	if state, err := f(); err == nil {
+		p.print(name, strconv.FormatUint(uint64(state), 10))
+	}
+}
+
 func (p *printer) printStringFunc(f func() (string, error)) {
 	name := nameOf(f)
 	if s, err := f(); err == nil {
@@ -92,6 +112,13 @@ func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) 
 
 func (p *printer) print(name, value string) {
 	fmt.Fprintf(p.w, "%s = %s\n", p.nameFunc(name), p.valueFunc(value))
+}
+
+func or(b bool, x, y string) string {
+	if b {
+		return x
+	}
+	return y
 }
 
 func rgbColorFunc(hex string) func(string) string {

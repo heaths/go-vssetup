@@ -40,3 +40,27 @@ func (v *ISetupInstance) GetDescription(lcid uint32) (*types.Bstr, error) {
 func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupInstance) QueryISetupInstance2(v2 **ISetupInstance2) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) GetState() (uint32, error) {
+	return 0, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) IsLaunchable() (bool, error) {
+	return false, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) IsComplete() (bool, error) {
+	return false, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
