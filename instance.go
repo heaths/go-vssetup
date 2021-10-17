@@ -2,11 +2,8 @@ package vssetup
 
 import (
 	"runtime"
-	"syscall"
 	"time"
-	"unsafe"
 
-	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 	"github.com/heaths/go-vssetup/internal/types"
 	"golang.org/x/text/language"
@@ -97,7 +94,7 @@ func (i *Instance) MakePath(path string) (string, error) {
 
 // State describes if the instance is complete or other combinations of InstanceState.
 func (i *Instance) State() (InstanceState, error) {
-	if err := i.initISetupInstance2(); err != nil {
+	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
 		return None, err
 	}
 
@@ -110,7 +107,7 @@ func (i *Instance) State() (InstanceState, error) {
 
 // ProductPath gets the full path to the main executable, if defined.
 func (i *Instance) ProductPath() (string, error) {
-	if err := i.initISetupInstance2(); err != nil {
+	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
 		return "", err
 	}
 	if s, err := getStringFunc(i.v2.GetProductPath); err != nil {
@@ -122,7 +119,7 @@ func (i *Instance) ProductPath() (string, error) {
 
 // IsLaunchable gets whether the instance can be launched.
 func (i *Instance) IsLaunchable() (bool, error) {
-	if err := i.initISetupInstance2(); err != nil {
+	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
 		return false, err
 	}
 	return i.v2.IsLaunchable()
@@ -130,7 +127,7 @@ func (i *Instance) IsLaunchable() (bool, error) {
 
 // IsComplete gets whether the instance has been completely installed.
 func (i *Instance) IsComplete() (bool, error) {
-	if err := i.initISetupInstance2(); err != nil {
+	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
 		return false, err
 	}
 	return i.v2.IsComplete()
@@ -144,30 +141,10 @@ func (i *Instance) IsRebootRequired() (bool, error) {
 
 // EnginePath gets the path to the setup engine that installed this instance.
 func (i *Instance) EnginePath() (string, error) {
-	if err := i.initISetupInstance2(); err != nil {
+	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
 		return "", err
 	}
 	return getStringFunc(i.v2.GetEnginePath)
-}
-
-func (i *Instance) initISetupInstance2() error {
-	if i.v2 != nil {
-		return nil
-	}
-
-	hr, _, _ := syscall.Syscall(
-		i.v.IUnknown.VTable().QueryInterface,
-		3,
-		uintptr(unsafe.Pointer(i.v)),
-		uintptr(unsafe.Pointer(interop.IID_ISetupInstance2)),
-		uintptr(unsafe.Pointer(&i.v2)),
-	)
-
-	if hr != 0 {
-		return ole.NewError(hr)
-	}
-
-	return nil
 }
 
 func getStringFunc(f func() (*types.Bstr, error)) (string, error) {

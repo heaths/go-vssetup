@@ -152,6 +152,26 @@ func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 	return &bstr, nil
 }
 
+func (v *ISetupInstance) QueryISetupInstance2(v2 **ISetupInstance2) error {
+	if *v2 != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupInstance2)),
+		uintptr(unsafe.Pointer(v2)),
+	)
+
+	if hr != 0 {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
+
 func (v *ISetupInstance2) GetState() (uint32, error) {
 	var state uint32
 	hr, _, _ := syscall.Syscall(
