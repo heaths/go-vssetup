@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/heaths/go-vssetup"
+	"github.com/iancoleman/strcase"
 	"golang.org/x/text/language"
 )
 
@@ -82,35 +83,35 @@ func newPrinter(w io.Writer) *printer {
 func (p *printer) printBoolFunc(f func() (bool, error)) {
 	name := nameOf(f)
 	if b, err := f(); err == nil {
-		p.print(name, or(b, "1", "0"))
+		p.print("", name, or(b, "1", "0"))
 	}
 }
 
 func (p *printer) printStateFunc(f func() (vssetup.InstanceState, error)) {
 	name := nameOf(f)
 	if state, err := f(); err == nil {
-		p.print(name, strconv.FormatUint(uint64(state), 10))
+		p.print("", name, strconv.FormatUint(uint64(state), 10))
 	}
 }
 
 func (p *printer) printStringFunc(f func() (string, error)) {
 	name := nameOf(f)
 	if s, err := f(); err == nil {
-		p.print(name, s)
+		p.print("", name, s)
 	}
 }
 
 func (p *printer) printTimeFunc(f func() (time.Time, error)) {
 	name := nameOf(f)
 	if t, err := f(); err == nil {
-		p.print(name, t.String())
+		p.print("", name, t.String())
 	}
 }
 
 func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) (string, error)) {
 	name := nameOf(f)
 	if s, err := f(l); err == nil {
-		p.print(name, s)
+		p.print("", name, s)
 	}
 }
 
@@ -124,12 +125,15 @@ func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, 
 		sort.Strings(names)
 
 		for _, name := range names {
-			p.print(prefix+name, m[name])
+			p.print(prefix, name, m[name])
 		}
 	}
 }
 
-func (p *printer) print(name string, value interface{}) {
+func (p *printer) print(prefix, name string, value interface{}) {
+	name = strcase.ToLowerCamel(name)
+	name = p.nameFunc(prefix + name)
+
 	fmt.Fprintf(p.w, "%s = %s\n", p.nameFunc(name), p.valueFunc(value))
 }
 
@@ -137,6 +141,7 @@ func or(b bool, x, y string) string {
 	if b {
 		return x
 	}
+
 	return y
 }
 

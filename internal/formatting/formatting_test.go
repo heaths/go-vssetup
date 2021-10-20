@@ -7,22 +7,24 @@ import (
 	"testing"
 	"time"
 
+	"github.com/heaths/go-vssetup"
 	"golang.org/x/text/language"
 )
 
 func BenchmarkPrintString(b *testing.B) {
 	w := &bytes.Buffer{}
 	for i := 0; i < b.N; i++ {
-		printString(w, "a", a)
+		printString(w, "a", stringFunc)
 	}
 }
 
 func TestPrintString(t *testing.T) {
 	w := &bytes.Buffer{}
-	printString(w, "a", a)
+	printString(w, "a", stringFunc)
 
-	if w.String() != "a = 1\n" {
-		t.Fatalf("got %s, expected a = 1", w.String())
+	want := "a = 1\n"
+	if w.String() != want {
+		t.Fatalf("got %s, expected %q", w.String(), want)
 	}
 }
 
@@ -30,17 +32,18 @@ func BenchmarkPrintStringFunc(b *testing.B) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
 	for i := 0; i < b.N; i++ {
-		p.printStringFunc(a)
+		p.printStringFunc(stringFunc)
 	}
 }
 
 func TestPrintStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printStringFunc(a)
+	p.printStringFunc(stringFunc)
 
-	if w.String() != "a = 1\n" {
-		t.Fatalf(`got %q, expected "a = 1"`, w.String())
+	want := "stringFunc = 1\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
 }
 
@@ -51,37 +54,75 @@ func TestPrintStringFunc_Method(t *testing.T) {
 
 	p.printStringFunc(s.String)
 
-	if w.String() != "String = 1\n" {
-		t.Fatalf(`got %q, expected "String = 1"`, w.String())
+	want := "string = 1\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
+	}
+}
+
+func TestPrintBoolFunc(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w)
+	p.printBoolFunc(boolFunc(false))
+	p.printBoolFunc(boolFunc(true))
+
+	want := "func1 = 0\nfunc2 = 1\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
+	}
+}
+
+func TestPrintStateFunc(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w)
+	p.printStateFunc(stateFunc)
+
+	want := "stateFunc = 4294967295\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
 }
 
 func TestPrintTimeFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printTimeFunc(b)
+	p.printTimeFunc(timeFunc)
 
-	if w.String() != "b = 2021-09-10 09:00:30 +0000 UTC\n" {
-		t.Fatalf(`got %q, expected "b = 2021-09-10 09:00:30 +0000 UTC"`, w.String())
+	want := "timeFunc = 2021-09-10 09:00:30 +0000 UTC\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
 }
 
 func TestPrintLocalizedStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printLocalizedStringFunc(language.AmericanEnglish, c)
+	p.printLocalizedStringFunc(language.AmericanEnglish, localizedFunc)
 
-	if w.String() != "c = en-US\n" {
-		t.Fatalf(`got %q, expected "c = en-US"`, w.String())
+	want := "localizedFunc = en-US\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
 }
 
 func TestPrintMapFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printMapFunc("prefix_", d)
+	p.printMapFunc("prefix_", mapFunc)
 
 	want := "prefix_a = 1\nprefix_b = 2\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
+	}
+}
+
+func TestPrint_CamelCase(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w)
+	p.print("", "CamelCase", 1)
+	p.print("prefix_", "CamelCase", 2)
+
+	want := "camelCase = 1\nprefix_camelCase = 2\n"
 	if w.String() != want {
 		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
@@ -94,19 +135,29 @@ func printString(w io.Writer, name string, f func() (string, error)) {
 	}
 }
 
-func a() (string, error) {
+func stringFunc() (string, error) {
 	return "1", nil
 }
 
-func b() (time.Time, error) {
+func boolFunc(b bool) func() (bool, error) {
+	return func() (bool, error) {
+		return b, nil
+	}
+}
+
+func stateFunc() (vssetup.InstanceState, error) {
+	return vssetup.Complete, nil
+}
+
+func timeFunc() (time.Time, error) {
 	return time.Date(2021, 9, 10, 9, 00, 30, 0, time.UTC), nil
 }
 
-func c(locale language.Tag) (string, error) {
+func localizedFunc(locale language.Tag) (string, error) {
 	return fmt.Sprint(locale), nil
 }
 
-func d() (map[string]interface{}, error) {
+func mapFunc() (map[string]interface{}, error) {
 	m := map[string]interface{}{
 		"a": 1,
 		"b": "2",
