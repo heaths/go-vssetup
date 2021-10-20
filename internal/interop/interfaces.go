@@ -15,6 +15,7 @@ var (
 	IID_IEnumSetupConfiguration = ole.NewGUID("6380BCFF-41D3-4B2E-8B2E-BF8A6810C848")
 	IID_ISetupInstance          = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
 	IID_ISetupInstance2         = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
+	IID_ISetupPropertyStore     = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
 )
 
 type ISetupConfiguration struct {
@@ -100,4 +101,18 @@ type ISetupInstance2Vtbl struct {
 
 func (v *ISetupInstance2) VTable() *ISetupInstance2Vtbl {
 	return (*ISetupInstance2Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupPropertyStore struct {
+	ole.IUnknown
+}
+
+type ISetupPropertyStoreVtbl struct {
+	ole.IUnknownVtbl
+	GetNames uintptr
+	GetValue uintptr
+}
+
+func (v *ISetupPropertyStore) VTable() *ISetupPropertyStoreVtbl {
+	return (*ISetupPropertyStoreVtbl)(unsafe.Pointer(v.RawVTable))
 }

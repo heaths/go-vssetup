@@ -41,7 +41,7 @@ func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
 
-func (v *ISetupInstance) QueryISetupInstance2(v2 **ISetupInstance2) error {
+func (v *ISetupInstance) ISetupInstance2(v2 **ISetupInstance2) error {
 	return errors.NotImplemented(nil)
 }
 
@@ -59,6 +59,10 @@ func (v *ISetupInstance2) IsLaunchable() (bool, error) {
 
 func (v *ISetupInstance2) IsComplete() (bool, error) {
 	return false, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
+	return nil, errors.NotImplemented(nil)
 }
 
 func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {

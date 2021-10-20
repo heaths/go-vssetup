@@ -152,7 +152,7 @@ func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 	return &bstr, nil
 }
 
-func (v *ISetupInstance) QueryISetupInstance2(v2 **ISetupInstance2) error {
+func (v *ISetupInstance) ISetupInstance2(v2 **ISetupInstance2) error {
 	if *v2 != nil {
 		return nil
 	}
@@ -238,6 +238,23 @@ func (v *ISetupInstance2) IsComplete() (bool, error) {
 	}
 
 	return b != 0, nil
+}
+
+func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
+	var properties *ISetupPropertyStore
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetProperties,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&properties)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return properties, nil
 }
 
 func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
