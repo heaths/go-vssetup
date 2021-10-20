@@ -5,6 +5,7 @@ import (
 	"io"
 	"reflect"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -15,12 +16,14 @@ import (
 
 var (
 	NameColor  = rgbColorFunc("9cdcfe")
-	ValueColor = rgbColorFunc("ce9178")
+	ValueColor = func(i interface{}) string {
+		return rgbColorFunc("ce9178")(fmt.Sprint(i))
+	}
 )
 
 type printer struct {
 	nameFunc  func(string) string
-	valueFunc func(string) string
+	valueFunc func(interface{}) string
 	w         io.Writer
 }
 
@@ -39,6 +42,7 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
 	p.printLocalizedStringFunc(locale, i.DisplayName)
 	p.printLocalizedStringFunc(locale, i.Description)
 	p.printStringFunc(i.EnginePath)
+	p.printMapFunc("properties_", i.Properties)
 }
 
 func nameOf(f interface{}) string {
@@ -63,14 +67,14 @@ func newPrinter(w io.Writer) *printer {
 			w:         w,
 		}
 	} else {
-		f := func(s string) string {
-			return s
-		}
-
 		return &printer{
-			nameFunc:  f,
-			valueFunc: f,
-			w:         w,
+			nameFunc: func(s string) string {
+				return s
+			},
+			valueFunc: func(i interface{}) string {
+				return fmt.Sprint(i)
+			},
+			w: w,
 		}
 	}
 }
@@ -110,7 +114,22 @@ func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) 
 	}
 }
 
-func (p *printer) print(name, value string) {
+func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, error)) {
+	if m, err := f(); err == nil {
+		names := make([]string, 0, len(m))
+		for name := range m {
+			names = append(names, name)
+		}
+
+		sort.Strings(names)
+
+		for _, name := range names {
+			p.print(prefix+name, m[name])
+		}
+	}
+}
+
+func (p *printer) print(name string, value interface{}) {
 	fmt.Fprintf(p.w, "%s = %s\n", p.nameFunc(name), p.valueFunc(value))
 }
 

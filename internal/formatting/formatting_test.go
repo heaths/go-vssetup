@@ -40,7 +40,7 @@ func TestPrintStringFunc(t *testing.T) {
 	p.printStringFunc(a)
 
 	if w.String() != "a = 1\n" {
-		t.Fatalf(`got "%s", expected "a = 1"`, w.String())
+		t.Fatalf(`got %q, expected "a = 1"`, w.String())
 	}
 }
 
@@ -52,7 +52,7 @@ func TestPrintStringFunc_Method(t *testing.T) {
 	p.printStringFunc(s.String)
 
 	if w.String() != "String = 1\n" {
-		t.Fatalf(`got "%s", expected "String = 1"`, w.String())
+		t.Fatalf(`got %q, expected "String = 1"`, w.String())
 	}
 }
 
@@ -62,7 +62,7 @@ func TestPrintTimeFunc(t *testing.T) {
 	p.printTimeFunc(b)
 
 	if w.String() != "b = 2021-09-10 09:00:30 +0000 UTC\n" {
-		t.Fatalf(`got "%s", expected "b = 2021-09-10 09:00:30 +0000 UTC"`, w.String())
+		t.Fatalf(`got %q, expected "b = 2021-09-10 09:00:30 +0000 UTC"`, w.String())
 	}
 }
 
@@ -72,7 +72,18 @@ func TestPrintLocalizedStringFunc(t *testing.T) {
 	p.printLocalizedStringFunc(language.AmericanEnglish, c)
 
 	if w.String() != "c = en-US\n" {
-		t.Fatalf(`got "%s", expected "c = en-US"`, w.String())
+		t.Fatalf(`got %q, expected "c = en-US"`, w.String())
+	}
+}
+
+func TestPrintMapFunc(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w)
+	p.printMapFunc("prefix_", d)
+
+	want := "prefix_a = 1\nprefix_b = 2\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
 }
 
@@ -93,6 +104,14 @@ func b() (time.Time, error) {
 
 func c(locale language.Tag) (string, error) {
 	return fmt.Sprint(locale), nil
+}
+
+func d() (map[string]interface{}, error) {
+	m := map[string]interface{}{
+		"a": 1,
+		"b": "2",
+	}
+	return m, nil
 }
 
 type str struct {

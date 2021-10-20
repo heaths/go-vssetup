@@ -4,6 +4,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 	"github.com/heaths/go-vssetup/internal/types"
 	"golang.org/x/text/language"
@@ -94,7 +95,7 @@ func (i *Instance) MakePath(path string) (string, error) {
 
 // State describes if the instance is complete or other combinations of InstanceState.
 func (i *Instance) State() (InstanceState, error) {
-	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return None, err
 	}
 
@@ -107,7 +108,7 @@ func (i *Instance) State() (InstanceState, error) {
 
 // ProductPath gets the full path to the main executable, if defined.
 func (i *Instance) ProductPath() (string, error) {
-	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return "", err
 	}
 	if s, err := getStringFunc(i.v2.GetProductPath); err != nil {
@@ -119,7 +120,7 @@ func (i *Instance) ProductPath() (string, error) {
 
 // IsLaunchable gets whether the instance can be launched.
 func (i *Instance) IsLaunchable() (bool, error) {
-	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return false, err
 	}
 	return i.v2.IsLaunchable()
@@ -127,7 +128,7 @@ func (i *Instance) IsLaunchable() (bool, error) {
 
 // IsComplete gets whether the instance has been completely installed.
 func (i *Instance) IsComplete() (bool, error) {
-	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return false, err
 	}
 	return i.v2.IsComplete()
@@ -139,9 +140,41 @@ func (i *Instance) IsRebootRequired() (bool, error) {
 	return state&NoRebootRequired == 0, err
 }
 
+// Properties gets a map of property names and values attached to the instance.
+func (i *Instance) Properties() (map[string]interface{}, error) {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
+		return nil, err
+	}
+
+	if store, err := i.v2.GetProperties(); err != nil {
+		return nil, err
+	} else if sa, err := store.GetNames(); err != nil {
+		return nil, err
+	} else {
+		defer store.Release()
+
+		conversion := ole.SafeArrayConversion{
+			Array: sa,
+		}
+
+		names := conversion.ToStringArray()
+		properties := make(map[string]interface{}, len(names))
+
+		for _, name := range names {
+			if vt, err := store.GetValue(name); err != nil {
+				return nil, err
+			} else {
+				properties[name] = vt.Value()
+			}
+		}
+
+		return properties, nil
+	}
+}
+
 // EnginePath gets the path to the setup engine that installed this instance.
 func (i *Instance) EnginePath() (string, error) {
-	if err := i.v.QueryISetupInstance2(&i.v2); err != nil {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return "", err
 	}
 	return getStringFunc(i.v2.GetEnginePath)
