@@ -26,6 +26,16 @@ for _, instance := range instances {
 }
 ```
 
+### vswhere
+
+While this project is not meant to replace the official [vswhere] that ships with Visual Studio and is available in some package managers, nor is it meant to be fully compatible with all official vswhere options, this project does have a `vswhere` command that allows you to quickly see this module in action:
+
+```bash
+go run ./cmd/vswhere
+```
+
+You can also download a binary from [releases](https://github.com/heaths/go-vssetup/releases). It is not call-compatible with the official [vswhere].
+
 ## FAQ
 
 * **On what platforms does this work?**
@@ -35,3 +45,5 @@ for _, instance := range instances {
 * **Is this project supported by Microsoft?**
 
   Though I am the developer who wrote the Setup Configuration API while working for Microsoft, this module is unsupported by Microsoft.
+
+[vswhere]: https://github.com/microsoft/vswhere
