@@ -189,6 +189,23 @@ func (v *ISetupInstance2) GetState() (uint32, error) {
 	return state, nil
 }
 
+func (v *ISetupInstance2) GetProduct() (*ISetupPackageReference, error) {
+	var product *ISetupPackageReference
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetProduct,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&product)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return product, nil
+}
+
 func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
 	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(

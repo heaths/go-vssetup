@@ -106,6 +106,19 @@ func (i *Instance) State() (InstanceState, error) {
 	}
 }
 
+// Product gets a reference to the root product package.
+func (i *Instance) Product() (*PackageReference, error) {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
+		return nil, err
+	}
+
+	if product, err := i.v2.GetProduct(); err != nil {
+		return nil, err
+	} else {
+		return newPackageReference(product), nil
+	}
+}
+
 // ProductPath gets the full path to the main executable, if defined.
 func (i *Instance) ProductPath() (string, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {

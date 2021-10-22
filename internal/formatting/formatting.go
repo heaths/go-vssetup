@@ -31,19 +31,24 @@ type printer struct {
 func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
 	p := newPrinter(w)
 
-	p.printStringFunc(i.InstanceID)
+	p.printStringFunc("", i.InstanceID)
 	p.printTimeFunc(i.InstallDate)
-	p.printStringFunc(i.InstallationName)
-	p.printStringFunc(i.InstallationPath)
-	p.printStringFunc(i.ProductPath)
+	p.printStringFunc("", i.InstallationName)
+	p.printStringFunc("", i.InstallationPath)
+	p.printStringFunc("", i.ProductPath)
 	p.printStateFunc(i.State)
-	p.printBoolFunc(i.IsLaunchable)
-	p.printBoolFunc(i.IsComplete)
-	p.printBoolFunc(i.IsRebootRequired)
+	p.printBoolFunc("", i.IsLaunchable)
+	p.printBoolFunc("", i.IsComplete)
+	p.printBoolFunc("", i.IsRebootRequired)
 	p.printLocalizedStringFunc(locale, i.DisplayName)
 	p.printLocalizedStringFunc(locale, i.Description)
-	p.printStringFunc(i.EnginePath)
+	p.printStringFunc("", i.EnginePath)
 	p.printMapFunc("properties_", i.Properties)
+
+	if product, err := i.Product(); err == nil {
+		p.printPackageReference("product_", product)
+		defer product.Close()
+	}
 }
 
 func nameOf(f interface{}) string {
@@ -80,10 +85,10 @@ func newPrinter(w io.Writer) *printer {
 	}
 }
 
-func (p *printer) printBoolFunc(f func() (bool, error)) {
+func (p *printer) printBoolFunc(prefix string, f func() (bool, error)) {
 	name := nameOf(f)
 	if b, err := f(); err == nil {
-		p.print("", name, or(b, "1", "0"))
+		p.print(prefix, name, or(b, "1", "0"))
 	}
 }
 
@@ -94,10 +99,10 @@ func (p *printer) printStateFunc(f func() (vssetup.InstanceState, error)) {
 	}
 }
 
-func (p *printer) printStringFunc(f func() (string, error)) {
+func (p *printer) printStringFunc(prefix string, f func() (string, error)) {
 	name := nameOf(f)
-	if s, err := f(); err == nil {
-		p.print("", name, s)
+	if s, err := f(); s != "" && err == nil {
+		p.print(prefix, name, s)
 	}
 }
 
@@ -110,8 +115,22 @@ func (p *printer) printTimeFunc(f func() (time.Time, error)) {
 
 func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) (string, error)) {
 	name := nameOf(f)
-	if s, err := f(l); err == nil {
+	if s, err := f(l); s != "" && err == nil {
 		p.print("", name, s)
+	}
+}
+
+func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageReference) {
+	p.printStringFunc(prefix, ref.ID)
+	p.printStringFunc(prefix, ref.Version)
+	p.printStringFunc(prefix, ref.Chip)
+	p.printStringFunc(prefix, ref.Language)
+	p.printStringFunc(prefix, ref.Branch)
+	p.printStringFunc(prefix, ref.Type)
+	p.printStringFunc(prefix, ref.UniqueID)
+
+	if ok, _ := ref.IsExtension(); ok {
+		p.printBoolFunc(prefix, ref.IsExtension)
 	}
 }
 

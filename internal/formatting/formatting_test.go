@@ -32,16 +32,27 @@ func BenchmarkPrintStringFunc(b *testing.B) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
 	for i := 0; i < b.N; i++ {
-		p.printStringFunc(stringFunc)
+		p.printStringFunc("", stringFunc)
 	}
 }
 
 func TestPrintStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printStringFunc(stringFunc)
+	p.printStringFunc("", stringFunc)
 
 	want := "stringFunc = 1\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
+	}
+}
+
+func TestPrintStringFunc_Empty(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w)
+	p.printStringFunc("", stringFuncEmpty)
+
+	want := ""
 	if w.String() != want {
 		t.Fatalf(`got %q, expected %q`, w.String(), want)
 	}
@@ -52,7 +63,7 @@ func TestPrintStringFunc_Method(t *testing.T) {
 	p := newPrinter(w)
 	s := str{"1"}
 
-	p.printStringFunc(s.String)
+	p.printStringFunc("", s.String)
 
 	want := "string = 1\n"
 	if w.String() != want {
@@ -63,8 +74,8 @@ func TestPrintStringFunc_Method(t *testing.T) {
 func TestPrintBoolFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w)
-	p.printBoolFunc(boolFunc(false))
-	p.printBoolFunc(boolFunc(true))
+	p.printBoolFunc("", boolFunc(false))
+	p.printBoolFunc("", boolFunc(true))
 
 	want := "func1 = 0\nfunc2 = 1\n"
 	if w.String() != want {
@@ -137,6 +148,10 @@ func printString(w io.Writer, name string, f func() (string, error)) {
 
 func stringFunc() (string, error) {
 	return "1", nil
+}
+
+func stringFuncEmpty() (string, error) {
+	return "", nil
 }
 
 func boolFunc(b bool) func() (bool, error) {

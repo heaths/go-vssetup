@@ -16,6 +16,7 @@ var (
 	IID_ISetupInstance          = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
 	IID_ISetupInstance2         = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
 	IID_ISetupPropertyStore     = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
+	IID_ISetupPackageReference  = ole.NewGUID("da8d8a16-b2b6-4487-a2f1-594ccccd6bf5")
 )
 
 type ISetupConfiguration struct {
@@ -115,4 +116,24 @@ type ISetupPropertyStoreVtbl struct {
 
 func (v *ISetupPropertyStore) VTable() *ISetupPropertyStoreVtbl {
 	return (*ISetupPropertyStoreVtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupPackageReference struct {
+	ole.IUnknown
+}
+
+type ISetupPackageReferenceVtbl struct {
+	ole.IUnknownVtbl
+	GetId          uintptr //nolint:stylecheck
+	GetVersion     uintptr
+	GetChip        uintptr
+	GetLanguage    uintptr
+	GetBranch      uintptr
+	GetType        uintptr
+	GetUniqueId    uintptr //nolint:stylecheck
+	GetIsExtension uintptr
+}
+
+func (v *ISetupPackageReference) VTable() *ISetupPackageReferenceVtbl {
+	return (*ISetupPackageReferenceVtbl)(unsafe.Pointer(v.RawVTable))
 }
