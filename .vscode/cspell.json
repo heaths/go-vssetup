@@ -29,6 +29,10 @@
             ]
         },
         {
+            "filename": "**/api/**",
+            "enabled": false
+        },
+        {
             "filename": "**/*.md",
             "words": [
                 "println"
