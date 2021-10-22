@@ -49,6 +49,10 @@ func (v *ISetupInstance2) GetState() (uint32, error) {
 	return 0, errors.NotImplemented(nil)
 }
 
+func (v *ISetupInstance2) GetProduct() (*ISetupPackageReference, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
 func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
