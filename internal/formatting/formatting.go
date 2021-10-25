@@ -28,7 +28,18 @@ type printer struct {
 	w         io.Writer
 }
 
-func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
+type Includes int
+
+const (
+	Packages Includes = 1
+)
+
+type Options struct {
+	Include Includes
+	Locale  language.Tag
+}
+
+func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	p := newPrinter(w)
 
 	p.printStringFunc("", i.InstanceID)
@@ -40,14 +51,24 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, locale language.Tag) {
 	p.printBoolFunc("", i.IsLaunchable)
 	p.printBoolFunc("", i.IsComplete)
 	p.printBoolFunc("", i.IsRebootRequired)
-	p.printLocalizedStringFunc(locale, i.DisplayName)
-	p.printLocalizedStringFunc(locale, i.Description)
+	p.printLocalizedStringFunc(opts.Locale, i.DisplayName)
+	p.printLocalizedStringFunc(opts.Locale, i.Description)
 	p.printStringFunc("", i.EnginePath)
 	p.printMapFunc("properties_", i.Properties)
 
-	if product, err := i.Product(); err == nil {
-		p.printPackageReference("product_", product)
-		defer product.Close()
+	if opts.Include&Packages != 0 {
+		if product, err := i.Product(); err == nil {
+			defer product.Close()
+			p.printPackageReference("product_", product)
+		}
+
+		if packages, err := i.Packages(); err == nil {
+			for idx, pkg := range packages {
+				defer pkg.Close()
+				prefix := fmt.Sprintf("package_%04d_", idx)
+				p.printPackageReference(prefix, pkg)
+			}
+		}
 	}
 }
 

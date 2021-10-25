@@ -4,6 +4,7 @@
 package interop
 
 import (
+	"fmt"
 	"syscall"
 	"unsafe"
 
@@ -187,6 +188,49 @@ func (v *ISetupInstance2) GetState() (uint32, error) {
 	}
 
 	return state, nil
+}
+
+func (v *ISetupInstance2) GetPackages() ([]*ISetupPackageReference, error) {
+	var sa *ole.SafeArray
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetPackages,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&sa)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	array := ole.SafeArrayConversion{
+		Array: sa,
+	}
+	defer array.Release()
+
+	if vt, err := array.GetType(); err != nil {
+		return nil, err
+	} else if vt != uint16(ole.VT_UNKNOWN) {
+		return nil, fmt.Errorf("unknown packages array type: %d", vt)
+	}
+
+	count, err := array.TotalElements(0)
+	if err != nil {
+		return nil, err
+	}
+
+	packages := make([]*ISetupPackageReference, count)
+	for i := int32(0); i < count; i++ {
+		var v *ISetupPackageReference
+		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
+			return nil, err
+		}
+
+		packages[i] = v
+	}
+
+	return packages, nil
 }
 
 func (v *ISetupInstance2) GetProduct() (*ISetupPackageReference, error) {
