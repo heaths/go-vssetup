@@ -11,18 +11,28 @@ import (
 )
 
 type options struct {
-	all    bool
-	locale *language.Tag
-	path   string
+	all     bool
+	include formatting.Includes
+	locale  *language.Tag
+	path    string
 }
 
 func main() {
 	opts := options{}
+	var include []string
 	var locale string
 
 	root := cobra.Command{
 		Use: "Locates instances of Visual Studio",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			for _, arg := range include {
+				switch arg {
+				case "packages":
+					opts.include |= formatting.Packages
+				default:
+					return fmt.Errorf("invalid argument: %s, accepts: packages", arg)
+				}
+			}
 			if locale, err := language.Parse(locale); err != nil {
 				return fmt.Errorf("invalid locale: %w", err)
 			} else {
@@ -38,6 +48,7 @@ func main() {
 	}
 
 	root.Flags().BoolVar(&opts.all, "all", false, "Finds all instances even if they are incomplete and may not launch.")
+	root.Flags().StringArrayVar(&include, "include", nil, "Other information to include: packages")
 	root.Flags().StringVar(&locale, "locale", "en", "The locale to use for localized values. The default is your preferred system locale.")
 	root.Flags().StringVar(&opts.path, "path", "", "Gets an instance for the given path, if any defined for that path.")
 
@@ -68,12 +79,16 @@ func run(opts *options) error {
 		opts.locale = &language.English
 	}
 
+	options := formatting.Options{
+		Include: opts.include,
+		Locale:  *opts.locale,
+	}
+
 	for i, instance := range instances {
 		if i > 0 {
 			fmt.Println()
 		}
-
-		formatting.PrintInstance(os.Stdout, instance, *opts.locale)
+		formatting.PrintInstance(os.Stdout, instance, options)
 	}
 
 	return nil

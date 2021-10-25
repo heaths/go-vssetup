@@ -106,6 +106,23 @@ func (i *Instance) State() (InstanceState, error) {
 	}
 }
 
+func (i *Instance) Packages() ([]*PackageReference, error) {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
+		return nil, err
+	}
+
+	if packages, err := i.v2.GetPackages(); err != nil {
+		return nil, err
+	} else {
+		result := make([]*PackageReference, len(packages))
+		for idx, pkg := range packages {
+			result[idx] = newPackageReference(pkg)
+		}
+
+		return result, nil
+	}
+}
+
 // Product gets a reference to the root product package.
 func (i *Instance) Product() (*PackageReference, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {
