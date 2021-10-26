@@ -267,6 +267,25 @@ func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
 	return &bstr, nil
 }
 
+func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
+	var errors *ISetupErrorState
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetErrors,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&errors)),
+		0,
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	} else if errors == nil {
+		return nil, nil
+	}
+
+	return errors, nil
+}
+
 func (v *ISetupInstance2) IsLaunchable() (bool, error) {
 	var b uint32
 	hr, _, _ := syscall.Syscall(

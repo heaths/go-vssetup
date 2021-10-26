@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	// cSpell:ignore cdcfe
 	NameColor  = rgbColorFunc("9cdcfe")
 	ValueColor = func(i interface{}) string {
 		return rgbColorFunc("ce9178")(fmt.Sprint(i))
@@ -26,12 +27,14 @@ type printer struct {
 	nameFunc  func(string) string
 	valueFunc func(interface{}) string
 	w         io.Writer
+	opts      Options
 }
 
 type Includes int
 
 const (
-	Packages Includes = 1
+	Errors   Includes = 1
+	Packages Includes = 2
 )
 
 type Options struct {
@@ -40,7 +43,7 @@ type Options struct {
 }
 
 func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
-	p := newPrinter(w)
+	p := newPrinter(w, opts)
 
 	p.printStringFunc("", i.InstanceID)
 	p.printTimeFunc(i.InstallDate)
@@ -70,6 +73,13 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 			}
 		}
 	}
+
+	if opts.Include&Errors != 0 {
+		if errorState, err := i.ErrorState(); errorState != nil && err == nil {
+			defer errorState.Close()
+			p.printErrorState("errors_", errorState)
+		}
+	}
 }
 
 func nameOf(f interface{}) string {
@@ -86,12 +96,13 @@ func nameOf(f interface{}) string {
 	return name
 }
 
-func newPrinter(w io.Writer) *printer {
+func newPrinter(w io.Writer, opts Options) *printer {
 	if IsColorTerminal(w) {
 		return &printer{
 			nameFunc:  NameColor,
 			valueFunc: ValueColor,
 			w:         w,
+			opts:      opts,
 		}
 	} else {
 		return &printer{
@@ -101,7 +112,8 @@ func newPrinter(w io.Writer) *printer {
 			valueFunc: func(i interface{}) string {
 				return fmt.Sprint(i)
 			},
-			w: w,
+			w:    w,
+			opts: opts,
 		}
 	}
 }
@@ -141,6 +153,29 @@ func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) 
 	}
 }
 
+func (p *printer) printErrorState(prefix string, errorState *vssetup.ErrorState) {
+	if p.opts.Include&Packages != 0 {
+		if packages, err := errorState.FailedPackages(); err == nil {
+			for i, ref := range packages {
+				defer ref.Close()
+				// cSpell:ignore sfailed
+				pre := fmt.Sprintf("%sfailed_%04d_", prefix, i)
+				p.printFailedPackageReference(pre, ref)
+			}
+		}
+		if packages, err := errorState.SkippedPackages(); err == nil {
+			for i, ref := range packages {
+				defer ref.Close()
+				// cSpell:ignore sskipped
+				pre := fmt.Sprintf("%sskipped_%04d_", prefix, i)
+				p.printPackageReference(pre, ref)
+			}
+		}
+	}
+	p.printStringFunc(prefix, errorState.ErrorLogPath)
+	p.printStringFunc(prefix, errorState.LogPath)
+}
+
 func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageReference) {
 	p.printStringFunc(prefix, ref.ID)
 	p.printStringFunc(prefix, ref.Version)
@@ -153,6 +188,10 @@ func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageRefer
 	if ok, _ := ref.IsExtension(); ok {
 		p.printBoolFunc(prefix, ref.IsExtension)
 	}
+}
+
+func (p *printer) printFailedPackageReference(prefix string, ref *vssetup.FailedPackageReference) {
+	p.printPackageReference(prefix, &ref.PackageReference)
 }
 
 func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, error)) {

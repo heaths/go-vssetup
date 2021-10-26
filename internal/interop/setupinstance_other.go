@@ -61,6 +61,10 @@ func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
 
+func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
 func (v *ISetupInstance2) IsLaunchable() (bool, error) {
 	return false, errors.NotImplemented(nil)
 }

@@ -39,3 +39,7 @@ func (v *ISetupPackageReference) GetUniqueId() (*types.Bstr, error) { //nolint:s
 func (v *ISetupPackageReference) GetIsExtension() (bool, error) {
 	return false, errors.NotImplemented(nil)
 }
+
+func (v *ISetupFailedPackageReference) GetISetupPackageReference() (*ISetupPackageReference, error) {
+	return nil, errors.NotImplemented(nil)
+}

@@ -148,6 +148,20 @@ func (i *Instance) ProductPath() (string, error) {
 	}
 }
 
+// ErrorState gets information about failed and skipped packages,
+// as well as log file paths.
+func (i *Instance) ErrorState() (*ErrorState, error) {
+	if err := i.v.ISetupInstance2(&i.v2); err != nil {
+		return nil, err
+	}
+	if e, err := i.v2.GetErrors(); err != nil {
+		return nil, err
+	} else if e != nil {
+		return newErrorState(e), nil
+	}
+	return nil, nil
+}
+
 // IsLaunchable gets whether the instance can be launched.
 func (i *Instance) IsLaunchable() (bool, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {
