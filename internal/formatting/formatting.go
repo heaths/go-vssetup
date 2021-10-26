@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	// cSpell:ignore cdcfe
 	NameColor  = rgbColorFunc("9cdcfe")
 	ValueColor = func(i interface{}) string {
 		return rgbColorFunc("ce9178")(fmt.Sprint(i))
@@ -26,6 +27,7 @@ type printer struct {
 	nameFunc  func(string) string
 	valueFunc func(interface{}) string
 	w         io.Writer
+	opts      Options
 }
 
 type Includes int
@@ -41,7 +43,7 @@ type Options struct {
 }
 
 func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
-	p := newPrinter(w)
+	p := newPrinter(w, opts)
 
 	p.printStringFunc("", i.InstanceID)
 	p.printTimeFunc(i.InstallDate)
@@ -57,13 +59,6 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	p.printStringFunc("", i.EnginePath)
 	p.printMapFunc("properties_", i.Properties)
 
-	if opts.Include&Errors != 0 {
-		if errorState, err := i.ErrorState(); err == nil {
-			defer errorState.Close()
-			p.printErrorState("errors_", errorState)
-		}
-	}
-
 	if opts.Include&Packages != 0 {
 		if product, err := i.Product(); err == nil {
 			defer product.Close()
@@ -76,6 +71,13 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 				prefix := fmt.Sprintf("package_%04d_", idx)
 				p.printPackageReference(prefix, pkg)
 			}
+		}
+	}
+
+	if opts.Include&Errors != 0 {
+		if errorState, err := i.ErrorState(); errorState != nil && err == nil {
+			defer errorState.Close()
+			p.printErrorState("errors_", errorState)
 		}
 	}
 }
@@ -94,12 +96,13 @@ func nameOf(f interface{}) string {
 	return name
 }
 
-func newPrinter(w io.Writer) *printer {
+func newPrinter(w io.Writer, opts Options) *printer {
 	if IsColorTerminal(w) {
 		return &printer{
 			nameFunc:  NameColor,
 			valueFunc: ValueColor,
 			w:         w,
+			opts:      opts,
 		}
 	} else {
 		return &printer{
@@ -109,7 +112,8 @@ func newPrinter(w io.Writer) *printer {
 			valueFunc: func(i interface{}) string {
 				return fmt.Sprint(i)
 			},
-			w: w,
+			w:    w,
+			opts: opts,
 		}
 	}
 }
@@ -150,18 +154,22 @@ func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) 
 }
 
 func (p *printer) printErrorState(prefix string, errorState *vssetup.ErrorState) {
-	if packages, err := errorState.FailedPackages(); err == nil {
-		for i, ref := range packages {
-			defer ref.Close()
-			pre := fmt.Sprintf("%s_failed_%04d_", prefix, i)
-			p.printFailedPackageReference(pre, ref)
+	if p.opts.Include&Packages != 0 {
+		if packages, err := errorState.FailedPackages(); err == nil {
+			for i, ref := range packages {
+				defer ref.Close()
+				// cSpell:ignore sfailed
+				pre := fmt.Sprintf("%sfailed_%04d_", prefix, i)
+				p.printFailedPackageReference(pre, ref)
+			}
 		}
-	}
-	if packages, err := errorState.SkippedPackages(); err == nil {
-		for i, ref := range packages {
-			defer ref.Close()
-			pre := fmt.Sprintf("%s_skipped_%04d_", prefix, i)
-			p.printPackageReference(pre, ref)
+		if packages, err := errorState.SkippedPackages(); err == nil {
+			for i, ref := range packages {
+				defer ref.Close()
+				// cSpell:ignore sskipped
+				pre := fmt.Sprintf("%sskipped_%04d_", prefix, i)
+				p.printPackageReference(pre, ref)
+			}
 		}
 	}
 	p.printStringFunc(prefix, errorState.ErrorLogPath)

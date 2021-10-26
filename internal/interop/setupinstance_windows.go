@@ -270,7 +270,7 @@ func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
 func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
 	var errors *ISetupErrorState
 	hr, _, _ := syscall.Syscall(
-		v.VTable().GetProduct,
+		v.VTable().GetErrors,
 		2,
 		uintptr(unsafe.Pointer(v)),
 		uintptr(unsafe.Pointer(&errors)),
@@ -279,6 +279,8 @@ func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
 
 	if hr != 0 {
 		return nil, ole.NewError(hr)
+	} else if errors == nil {
+		return nil, nil
 	}
 
 	return errors, nil

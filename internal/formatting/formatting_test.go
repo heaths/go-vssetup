@@ -30,7 +30,7 @@ func TestPrintString(t *testing.T) {
 
 func BenchmarkPrintStringFunc(b *testing.B) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	for i := 0; i < b.N; i++ {
 		p.printStringFunc("", stringFunc)
 	}
@@ -38,7 +38,7 @@ func BenchmarkPrintStringFunc(b *testing.B) {
 
 func TestPrintStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printStringFunc("", stringFunc)
 
 	want := "stringFunc = 1\n"
@@ -49,7 +49,7 @@ func TestPrintStringFunc(t *testing.T) {
 
 func TestPrintStringFunc_Empty(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printStringFunc("", stringFuncEmpty)
 
 	want := ""
@@ -60,7 +60,7 @@ func TestPrintStringFunc_Empty(t *testing.T) {
 
 func TestPrintStringFunc_Method(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	s := str{"1"}
 
 	p.printStringFunc("", s.String)
@@ -73,7 +73,7 @@ func TestPrintStringFunc_Method(t *testing.T) {
 
 func TestPrintBoolFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printBoolFunc("", boolFunc(false))
 	p.printBoolFunc("", boolFunc(true))
 
@@ -85,7 +85,7 @@ func TestPrintBoolFunc(t *testing.T) {
 
 func TestPrintStateFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printStateFunc(stateFunc)
 
 	want := "stateFunc = 4294967295\n"
@@ -96,7 +96,7 @@ func TestPrintStateFunc(t *testing.T) {
 
 func TestPrintTimeFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printTimeFunc(timeFunc)
 
 	want := "timeFunc = 2021-09-10 09:00:30 +0000 UTC\n"
@@ -107,7 +107,7 @@ func TestPrintTimeFunc(t *testing.T) {
 
 func TestPrintLocalizedStringFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printLocalizedStringFunc(language.AmericanEnglish, localizedFunc)
 
 	want := "localizedFunc = en-US\n"
@@ -118,7 +118,7 @@ func TestPrintLocalizedStringFunc(t *testing.T) {
 
 func TestPrintMapFunc(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.printMapFunc("prefix_", mapFunc)
 
 	want := "prefix_a = 1\nprefix_b = 2\n"
@@ -129,7 +129,7 @@ func TestPrintMapFunc(t *testing.T) {
 
 func TestPrint_CamelCase(t *testing.T) {
 	w := &bytes.Buffer{}
-	p := newPrinter(w)
+	p := newPrinter(w, Options{})
 	p.print("", "CamelCase", 1)
 	p.print("prefix_", "CamelCase", 2)
 

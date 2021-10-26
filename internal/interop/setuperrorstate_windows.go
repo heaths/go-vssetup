@@ -37,7 +37,7 @@ func (v *ISetupErrorState) GetFailedPackages() ([]*ISetupFailedPackageReference,
 	packages := make([]*ISetupFailedPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var ref *ISetupFailedPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
+		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
 			return nil, err
 		}
 
@@ -72,7 +72,7 @@ func (v *ISetupErrorState) GetSkippedPackages() ([]*ISetupPackageReference, erro
 	packages := make([]*ISetupPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var ref *ISetupPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
+		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
 			return nil, err
 		}
 

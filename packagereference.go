@@ -86,7 +86,7 @@ func newFailedPackageReference(v *interop.ISetupPackageReference, vf *interop.IS
 		vf: vf,
 	}
 
-	runtime.SetFinalizer(p, (*PackageReference).Close)
+	runtime.SetFinalizer(p, (*FailedPackageReference).Close)
 	return p
 }
 

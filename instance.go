@@ -156,9 +156,10 @@ func (i *Instance) ErrorState() (*ErrorState, error) {
 	}
 	if e, err := i.v2.GetErrors(); err != nil {
 		return nil, err
-	} else {
+	} else if e != nil {
 		return newErrorState(e), nil
 	}
+	return nil, nil
 }
 
 // IsLaunchable gets whether the instance can be launched.

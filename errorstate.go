@@ -90,18 +90,19 @@ func (e *ErrorState) LogPath() (string, error) {
 	return getStringFunc(e.v2.GetLogFilePath)
 }
 
-func getISetupPackageReference(vf *interop.ISetupFailedPackageReference) (v *interop.ISetupPackageReference, err error) {
+func getISetupPackageReference(vf *interop.ISetupFailedPackageReference) (*interop.ISetupPackageReference, error) {
+	var v *interop.ISetupPackageReference
 	hr, _, _ := syscall.Syscall(
 		vf.IUnknown.VTable().QueryInterface,
 		3,
 		uintptr(unsafe.Pointer(vf)),
 		uintptr(unsafe.Pointer(interop.IID_ISetupPackageReference)),
-		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&v)),
 	)
 
 	if hr != 0 {
-		err = ole.NewError(hr)
+		return nil, ole.NewError(hr)
 	}
 
-	return
+	return v, nil
 }

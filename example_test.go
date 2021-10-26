@@ -1,5 +1,5 @@
-//go:build windows && live
-// +build windows,live
+//go:build live
+// +build live
 
 package vssetup_test
 
