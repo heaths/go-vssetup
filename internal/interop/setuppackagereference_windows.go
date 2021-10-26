@@ -56,6 +56,23 @@ func (v *ISetupPackageReference) GetIsExtension() (bool, error) {
 	return b != 0, nil
 }
 
+func (v *ISetupFailedPackageReference) GetISetupPackageReference() (*ISetupPackageReference, error) {
+	var ref *ISetupPackageReference
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupPackageReference)),
+		uintptr(unsafe.Pointer(&ref)),
+	)
+
+	if hr != 0 {
+		return nil, ole.NewError(hr)
+	}
+
+	return ref, nil
+}
+
 func (v *ISetupPackageReference) bstrFunc(fn uintptr) (*types.Bstr, error) {
 	var bstr types.Bstr
 	hr, _, _ := syscall.Syscall(

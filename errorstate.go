@@ -2,10 +2,7 @@ package vssetup
 
 import (
 	"runtime"
-	"syscall"
-	"unsafe"
 
-	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 )
 
@@ -49,7 +46,7 @@ func (e *ErrorState) FailedPackages() ([]*FailedPackageReference, error) {
 	} else {
 		packages := make([]*FailedPackageReference, len(array))
 		for i, vf := range array {
-			if v, err := getISetupPackageReference(vf); err == nil {
+			if v, err := vf.GetISetupPackageReference(); err == nil {
 				packages[i] = newFailedPackageReference(v, vf)
 			}
 		}
@@ -88,21 +85,4 @@ func (e *ErrorState) LogPath() (string, error) {
 	}
 
 	return getStringFunc(e.v2.GetLogFilePath)
-}
-
-func getISetupPackageReference(vf *interop.ISetupFailedPackageReference) (*interop.ISetupPackageReference, error) {
-	var v *interop.ISetupPackageReference
-	hr, _, _ := syscall.Syscall(
-		vf.IUnknown.VTable().QueryInterface,
-		3,
-		uintptr(unsafe.Pointer(vf)),
-		uintptr(unsafe.Pointer(interop.IID_ISetupPackageReference)),
-		uintptr(unsafe.Pointer(&v)),
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return v, nil
 }
