@@ -71,3 +71,34 @@ func (p *PackageReference) UniqueID() (string, error) {
 func (p *PackageReference) IsExtension() (bool, error) {
 	return p.v.GetIsExtension()
 }
+
+// FailedPackageReference describes unique attributes of a failed package.
+type FailedPackageReference struct {
+	PackageReference
+	vf *interop.ISetupFailedPackageReference
+}
+
+func newFailedPackageReference(v *interop.ISetupPackageReference, vf *interop.ISetupFailedPackageReference) *FailedPackageReference {
+	p := &FailedPackageReference{
+		PackageReference: PackageReference{
+			v: v,
+		},
+		vf: vf,
+	}
+
+	runtime.SetFinalizer(p, (*PackageReference).Close)
+	return p
+}
+
+// Close releases any resources used by this FailedPackageReference immediately.
+func (p *FailedPackageReference) Close() error {
+	if p.v != nil {
+		if p.vf != nil {
+			p.vf.Release()
+		}
+
+		return p.PackageReference.Close()
+	}
+
+	return nil
+}

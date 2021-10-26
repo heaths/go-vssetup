@@ -31,7 +31,8 @@ type printer struct {
 type Includes int
 
 const (
-	Packages Includes = 1
+	Errors   Includes = 1
+	Packages Includes = 2
 )
 
 type Options struct {
@@ -55,6 +56,13 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	p.printLocalizedStringFunc(opts.Locale, i.Description)
 	p.printStringFunc("", i.EnginePath)
 	p.printMapFunc("properties_", i.Properties)
+
+	if opts.Include&Errors != 0 {
+		if errorState, err := i.ErrorState(); err == nil {
+			defer errorState.Close()
+			p.printErrorState("errors_", errorState)
+		}
+	}
 
 	if opts.Include&Packages != 0 {
 		if product, err := i.Product(); err == nil {
@@ -141,6 +149,25 @@ func (p *printer) printLocalizedStringFunc(l language.Tag, f func(language.Tag) 
 	}
 }
 
+func (p *printer) printErrorState(prefix string, errorState *vssetup.ErrorState) {
+	if packages, err := errorState.FailedPackages(); err == nil {
+		for i, ref := range packages {
+			defer ref.Close()
+			pre := fmt.Sprintf("%s_failed_%04d_", prefix, i)
+			p.printFailedPackageReference(pre, ref)
+		}
+	}
+	if packages, err := errorState.SkippedPackages(); err == nil {
+		for i, ref := range packages {
+			defer ref.Close()
+			pre := fmt.Sprintf("%s_skipped_%04d_", prefix, i)
+			p.printPackageReference(pre, ref)
+		}
+	}
+	p.printStringFunc(prefix, errorState.ErrorLogPath)
+	p.printStringFunc(prefix, errorState.LogPath)
+}
+
 func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageReference) {
 	p.printStringFunc(prefix, ref.ID)
 	p.printStringFunc(prefix, ref.Version)
@@ -153,6 +180,10 @@ func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageRefer
 	if ok, _ := ref.IsExtension(); ok {
 		p.printBoolFunc(prefix, ref.IsExtension)
 	}
+}
+
+func (p *printer) printFailedPackageReference(prefix string, ref *vssetup.FailedPackageReference) {
+	p.printPackageReference(prefix, &ref.PackageReference)
 }
 
 func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, error)) {
