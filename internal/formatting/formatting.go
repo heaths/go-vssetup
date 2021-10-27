@@ -139,6 +139,13 @@ func (p *printer) printStringFunc(prefix string, f func() (string, error)) {
 	}
 }
 
+func (p *printer) printStringArrayFunc(prefix string, f func() ([]string, error)) {
+	name := nameOf(f)
+	if arr, err := f(); err == nil && len(arr) > 0 {
+		p.print(prefix, name, strings.Join(arr, " "))
+	}
+}
+
 func (p *printer) printTimeFunc(f func() (time.Time, error)) {
 	name := nameOf(f)
 	if t, err := f(); err == nil {
@@ -192,6 +199,11 @@ func (p *printer) printPackageReference(prefix string, ref *vssetup.PackageRefer
 
 func (p *printer) printFailedPackageReference(prefix string, ref *vssetup.FailedPackageReference) {
 	p.printPackageReference(prefix, &ref.PackageReference)
+	p.printStringFunc(prefix, ref.LogFilePath)
+	p.printStringFunc(prefix, ref.Description)
+	p.printStringFunc(prefix, ref.Action)
+	p.printStringFunc(prefix, ref.ReturnCode)
+	p.printStringArrayFunc(prefix, ref.Details)
 }
 
 func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, error)) {

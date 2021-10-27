@@ -10,16 +10,18 @@ import (
 var (
 	CLSID_SetupConfiguration = ole.NewGUID("177F0C4A-1CD3-4DE7-A32C-71DBBB9FA36D")
 
-	IID_ISetupConfiguration          = ole.NewGUID("42843719-DB4C-46C2-8E7C-64F1816EFD5B")
-	IID_ISetupConfiguration2         = ole.NewGUID("26AAB78C-4A60-49D6-AF3B-3C35BC93365D")
-	IID_IEnumSetupConfiguration      = ole.NewGUID("6380BCFF-41D3-4B2E-8B2E-BF8A6810C848")
-	IID_ISetupInstance               = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
-	IID_ISetupInstance2              = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
-	IID_ISetupPropertyStore          = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
-	IID_ISetupPackageReference       = ole.NewGUID("da8d8a16-b2b6-4487-a2f1-594ccccd6bf5")
-	IID_ISetupErrorState             = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
-	IID_ISetupErrorState2            = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
-	IID_ISetupFailedPackageReference = ole.NewGUID("E73559CD-7003-4022-B134-27DC650B280F")
+	IID_ISetupConfiguration           = ole.NewGUID("42843719-DB4C-46C2-8E7C-64F1816EFD5B")
+	IID_ISetupConfiguration2          = ole.NewGUID("26AAB78C-4A60-49D6-AF3B-3C35BC93365D")
+	IID_IEnumSetupConfiguration       = ole.NewGUID("6380BCFF-41D3-4B2E-8B2E-BF8A6810C848")
+	IID_ISetupInstance                = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
+	IID_ISetupInstance2               = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
+	IID_ISetupPropertyStore           = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
+	IID_ISetupPackageReference        = ole.NewGUID("da8d8a16-b2b6-4487-a2f1-594ccccd6bf5")
+	IID_ISetupErrorState              = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
+	IID_ISetupErrorState2             = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
+	IID_ISetupFailedPackageReference  = ole.NewGUID("E73559CD-7003-4022-B134-27DC650B280F")
+	IID_ISetupFailedPackageReference2 = ole.NewGUID("0FAD873E-E874-42E3-B268-4FE2F096B9CA")
+	IID_ISetupFailedPackageReference3 = ole.NewGUID("EBC3AE68-AD15-44E8-8377-39DBF0316F6C")
 )
 
 type ISetupConfiguration struct {
@@ -179,4 +181,35 @@ type ISetupFailedPackageReferenceVtbl struct {
 
 func (v *ISetupFailedPackageReference) VTable() *ISetupFailedPackageReferenceVtbl {
 	return (*ISetupFailedPackageReferenceVtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupFailedPackageReference2 struct {
+	ISetupFailedPackageReference
+}
+
+type ISetupFailedPackageReference2Vtbl struct {
+	ISetupFailedPackageReferenceVtbl
+	GetLogFilePath      uintptr
+	GetDescription      uintptr
+	GetSignature        uintptr
+	GetDetails          uintptr
+	GetAffectedPackages uintptr
+}
+
+func (v *ISetupFailedPackageReference2) VTable() *ISetupFailedPackageReference2Vtbl {
+	return (*ISetupFailedPackageReference2Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupFailedPackageReference3 struct {
+	ISetupFailedPackageReference2
+}
+
+type ISetupFailedPackageReference3Vtbl struct {
+	ISetupFailedPackageReference2Vtbl
+	GetAction     uintptr
+	GetReturnCode uintptr
+}
+
+func (v *ISetupFailedPackageReference3) VTable() *ISetupFailedPackageReference3Vtbl {
+	return (*ISetupFailedPackageReference3Vtbl)(unsafe.Pointer(v.RawVTable))
 }

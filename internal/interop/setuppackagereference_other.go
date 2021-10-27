@@ -43,3 +43,39 @@ func (v *ISetupPackageReference) GetIsExtension() (bool, error) {
 func (v *ISetupFailedPackageReference) GetISetupPackageReference() (*ISetupPackageReference, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupFailedPackageReference) ISetupFailedPackageReference2(v2 **ISetupFailedPackageReference2) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference2) GetLogFilePath() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference2) GetDescription() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference2) GetSignature() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference2) GetDetails() ([]string, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference2) GetAffectedPackages() ([]*ISetupPackageReference, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference) ISetupFailedPackageReference3(v3 **ISetupFailedPackageReference3) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference3) GetAction() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupFailedPackageReference3) GetReturnCode() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
