@@ -10,10 +10,11 @@ import (
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/types"
+	"github.com/heaths/go-vssetup/internal/windows"
 )
 
 func (v *ISetupErrorState) GetFailedPackages() ([]*ISetupFailedPackageReference, error) {
-	sa, err := v.safeArrayFunc(v.VTable().GetFailedPackages)
+	sa, err := safeArrayFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetFailedPackages)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,7 @@ func (v *ISetupErrorState) GetFailedPackages() ([]*ISetupFailedPackageReference,
 	packages := make([]*ISetupFailedPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var ref *ISetupFailedPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
+		if err := windows.SafeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
 			return nil, err
 		}
 
@@ -48,7 +49,7 @@ func (v *ISetupErrorState) GetFailedPackages() ([]*ISetupFailedPackageReference,
 }
 
 func (v *ISetupErrorState) GetSkippedPackages() ([]*ISetupPackageReference, error) {
-	sa, err := v.safeArrayFunc(v.VTable().GetSkippedPackages)
+	sa, err := safeArrayFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetSkippedPackages)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +73,7 @@ func (v *ISetupErrorState) GetSkippedPackages() ([]*ISetupPackageReference, erro
 	packages := make([]*ISetupPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var ref *ISetupPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
+		if err := windows.SafeArrayGetElement(sa, i, unsafe.Pointer(&ref)); err != nil {
 			return nil, err
 		}
 
@@ -95,7 +96,7 @@ func (v *ISetupErrorState) ISetupErrorState2(v2 **ISetupErrorState2) error {
 		uintptr(unsafe.Pointer(v2)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return ole.NewError(hr)
 	}
 
@@ -103,42 +104,9 @@ func (v *ISetupErrorState) ISetupErrorState2(v2 **ISetupErrorState2) error {
 }
 
 func (v *ISetupErrorState2) GetErrorLogFilePath() (*types.Bstr, error) {
-	return v.bstrFunc(v.VTable().GetErrorLogFilePath)
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetErrorLogFilePath)
 }
 
 func (v *ISetupErrorState2) GetLogFilePath() (*types.Bstr, error) {
-	return v.bstrFunc(v.VTable().GetLogFilePath)
-}
-
-func (v *ISetupErrorState) safeArrayFunc(fn uintptr) (array *ole.SafeArray, err error) {
-	hr, _, _ := syscall.Syscall(
-		fn,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&array)),
-		0,
-	)
-
-	if hr != 0 {
-		err = ole.NewError(hr)
-	}
-
-	return
-}
-
-func (v *ISetupErrorState2) bstrFunc(fn uintptr) (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		fn,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetLogFilePath)
 }

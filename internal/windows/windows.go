@@ -19,10 +19,11 @@ var (
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 	modoleaut32 = syscall.NewLazyDLL("oleaut32.dll")
 
-	procGetUserDefaultLCID = modkernel32.NewProc("GetUserDefaultLCID")
-	procLocaleNameToLCID   = modkernel32.NewProc("LocaleNameToLCID")
-	procSysAllocString     = modoleaut32.NewProc("SysAllocString")
-	procSysFreeString      = modoleaut32.NewProc("SysFreeString")
+	procGetUserDefaultLCID  = modkernel32.NewProc("GetUserDefaultLCID")
+	procLocaleNameToLCID    = modkernel32.NewProc("LocaleNameToLCID")
+	procSafeArrayGetElement = modoleaut32.NewProc("SafeArrayGetElement")
+	procSysAllocString      = modoleaut32.NewProc("SysAllocString")
+	procSysFreeString       = modoleaut32.NewProc("SysFreeString")
 )
 
 func GetUserDefaultLCID() uint32 {
@@ -50,6 +51,20 @@ func LocaleNameToLCID(locale string) uint32 {
 	return 0
 }
 
+func SafeArrayGetElement(sa *ole.SafeArray, index int32, pv unsafe.Pointer) (err error) {
+	hr, _, _ := procSafeArrayGetElement.Call(
+		uintptr(unsafe.Pointer(sa)),
+		uintptr(unsafe.Pointer(&index)),
+		uintptr(pv),
+	)
+
+	if hr != ole.S_OK {
+		err = ole.NewError(hr)
+	}
+
+	return
+}
+
 // Work around https://github.com/go-ole/go-ole/issues/221
 func SysAllocString(s string) *uint16 {
 	if wcs, err := syscall.UTF16PtrFromString(s); err == nil {
@@ -63,7 +78,7 @@ func SysAllocString(s string) *uint16 {
 // Work around https://github.com/go-ole/go-ole/issues/221
 func SysFreeString(v *uint16) error {
 	hr, _, _ := procSysFreeString.Call(uintptr(unsafe.Pointer(v)))
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return ole.NewError(hr)
 	}
 

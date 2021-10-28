@@ -10,23 +10,11 @@ import (
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/types"
+	"github.com/heaths/go-vssetup/internal/windows"
 )
 
 func (v *ISetupInstance) GetInstanceId() (*types.Bstr, error) { //nolint:stylecheck
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetInstanceId,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetInstanceId)
 }
 
 func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
@@ -39,7 +27,7 @@ func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -47,88 +35,23 @@ func (v *ISetupInstance) GetInstallDate() (*types.Filetime, error) {
 }
 
 func (v *ISetupInstance) GetInstallationName() (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetInstallationName,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetInstallationName)
 }
 
 func (v *ISetupInstance) GetInstallationPath() (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetInstallationPath,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetInstallationPath)
 }
 
 func (v *ISetupInstance) GetInstallationVersion() (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetInstallationVersion,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetInstallationVersion)
 }
 
 func (v *ISetupInstance) GetDisplayName(lcid uint32) (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetDisplayName,
-		3,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(lcid),
-		uintptr(bstr.Addr()),
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return localizedBstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetDisplayName, lcid)
 }
 
 func (v *ISetupInstance) GetDescription(lcid uint32) (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetDescription,
-		3,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(lcid),
-		uintptr(bstr.Addr()),
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return localizedBstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetDescription, lcid)
 }
 
 func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
@@ -146,7 +69,7 @@ func (v *ISetupInstance) ResolvePath(relativePath string) (*types.Bstr, error) {
 		bstr.Addr(),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -166,7 +89,7 @@ func (v *ISetupInstance) ISetupInstance2(v2 **ISetupInstance2) error {
 		uintptr(unsafe.Pointer(v2)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return ole.NewError(hr)
 	}
 
@@ -183,7 +106,7 @@ func (v *ISetupInstance2) GetState() (uint32, error) {
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return 0, ole.NewError(hr)
 	}
 
@@ -191,17 +114,9 @@ func (v *ISetupInstance2) GetState() (uint32, error) {
 }
 
 func (v *ISetupInstance2) GetPackages() ([]*ISetupPackageReference, error) {
-	var sa *ole.SafeArray
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetPackages,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&sa)),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
+	sa, err := safeArrayFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetPackages)
+	if err != nil {
+		return nil, err
 	}
 
 	array := ole.SafeArrayConversion{
@@ -223,7 +138,7 @@ func (v *ISetupInstance2) GetPackages() ([]*ISetupPackageReference, error) {
 	packages := make([]*ISetupPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var v *ISetupPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
+		if err := windows.SafeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
 			return nil, err
 		}
 
@@ -243,7 +158,7 @@ func (v *ISetupInstance2) GetProduct() (*ISetupPackageReference, error) {
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -251,20 +166,7 @@ func (v *ISetupInstance2) GetProduct() (*ISetupPackageReference, error) {
 }
 
 func (v *ISetupInstance2) GetProductPath() (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetProductPath,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetProductPath)
 }
 
 func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
@@ -277,7 +179,7 @@ func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	} else if errors == nil {
 		return nil, nil
@@ -287,37 +189,11 @@ func (v *ISetupInstance2) GetErrors() (*ISetupErrorState, error) {
 }
 
 func (v *ISetupInstance2) IsLaunchable() (bool, error) {
-	var b uint32
-	hr, _, _ := syscall.Syscall(
-		v.VTable().IsLaunchable,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&b)),
-		0,
-	)
-
-	if hr != 0 {
-		return false, ole.NewError(hr)
-	}
-
-	return b != 0, nil
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().IsLaunchable)
 }
 
 func (v *ISetupInstance2) IsComplete() (bool, error) {
-	var b uint32
-	hr, _, _ := syscall.Syscall(
-		v.VTable().IsComplete,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&b)),
-		0,
-	)
-
-	if hr != 0 {
-		return false, ole.NewError(hr)
-	}
-
-	return b != 0, nil
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().IsComplete)
 }
 
 func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
@@ -330,7 +206,7 @@ func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -338,18 +214,5 @@ func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
 }
 
 func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
-	var bstr types.Bstr
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetEnginePath,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(bstr.Addr()),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return &bstr, nil
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetEnginePath)
 }

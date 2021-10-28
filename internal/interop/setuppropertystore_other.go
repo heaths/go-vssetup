@@ -8,7 +8,7 @@ import (
 	"github.com/heaths/go-vssetup/internal/errors"
 )
 
-func (v *ISetupPropertyStore) GetNames() (*ole.SafeArray, error) {
+func (v *ISetupPropertyStore) GetNames() ([]string, error) {
 	return nil, errors.NotImplemented(nil)
 }
 

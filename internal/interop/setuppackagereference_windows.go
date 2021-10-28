@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/types"
+	"github.com/heaths/go-vssetup/internal/windows"
 )
 
 func (v *ISetupPackageReference) GetId() (*types.Bstr, error) { //nolint:stylecheck
@@ -41,20 +42,7 @@ func (v *ISetupPackageReference) GetUniqueId() (*types.Bstr, error) { //nolint:s
 }
 
 func (v *ISetupPackageReference) GetIsExtension() (bool, error) {
-	var b uint32
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetIsExtension,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&b)),
-		0,
-	)
-
-	if hr != 0 {
-		return false, ole.NewError(hr)
-	}
-
-	return b != 0, nil
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetIsExtension)
 }
 
 func (v *ISetupFailedPackageReference) GetISetupPackageReference() (*ISetupPackageReference, error) {
@@ -67,7 +55,7 @@ func (v *ISetupFailedPackageReference) GetISetupPackageReference() (*ISetupPacka
 		uintptr(unsafe.Pointer(&ref)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -87,7 +75,7 @@ func (v *ISetupFailedPackageReference) ISetupFailedPackageReference2(v2 **ISetup
 		uintptr(unsafe.Pointer(v2)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return ole.NewError(hr)
 	}
 
@@ -107,25 +95,7 @@ func (v *ISetupFailedPackageReference2) GetSignature() (*types.Bstr, error) {
 }
 
 func (v *ISetupFailedPackageReference2) GetDetails() ([]string, error) {
-	var sa *ole.SafeArray
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetDetails,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&sa)),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	array := ole.SafeArrayConversion{
-		Array: sa,
-	}
-	defer array.Release()
-
-	return array.ToStringArray(), nil
+	return stringArrayFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetDetails)
 }
 
 func (v *ISetupFailedPackageReference2) GetAffectedPackages() ([]*ISetupPackageReference, error) {
@@ -138,7 +108,7 @@ func (v *ISetupFailedPackageReference2) GetAffectedPackages() ([]*ISetupPackageR
 		0,
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 
@@ -161,7 +131,7 @@ func (v *ISetupFailedPackageReference2) GetAffectedPackages() ([]*ISetupPackageR
 	packages := make([]*ISetupPackageReference, count)
 	for i := int32(0); i < count; i++ {
 		var v *ISetupPackageReference
-		if err := safeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
+		if err := windows.SafeArrayGetElement(sa, i, unsafe.Pointer(&v)); err != nil {
 			return nil, err
 		}
 
@@ -184,7 +154,7 @@ func (v *ISetupFailedPackageReference) ISetupFailedPackageReference3(v3 **ISetup
 		uintptr(unsafe.Pointer(v3)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return ole.NewError(hr)
 	}
 

@@ -7,6 +7,15 @@ import (
 )
 
 //nolint:stylecheck
+const (
+	S_FALSE    = 1
+	E_NOTFOUND = 0x80070490
+
+	// cSpell:ignore REGDB
+	REGDB_E_CLASSNOTREG = 0x80040154
+)
+
+//nolint:stylecheck
 var (
 	CLSID_SetupConfiguration = ole.NewGUID("177F0C4A-1CD3-4DE7-A32C-71DBBB9FA36D")
 
