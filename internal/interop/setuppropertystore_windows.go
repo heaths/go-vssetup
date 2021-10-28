@@ -10,21 +10,8 @@ import (
 	"github.com/go-ole/go-ole"
 )
 
-func (v *ISetupPropertyStore) GetNames() (*ole.SafeArray, error) {
-	var names *ole.SafeArray
-	hr, _, _ := syscall.Syscall(
-		v.VTable().GetNames,
-		2,
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(&names)),
-		0,
-	)
-
-	if hr != 0 {
-		return nil, ole.NewError(hr)
-	}
-
-	return names, nil
+func (v *ISetupPropertyStore) GetNames() ([]string, error) {
+	return stringArrayFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetNames)
 }
 
 func (v *ISetupPropertyStore) GetValue(name string) (*ole.VARIANT, error) {
@@ -42,7 +29,7 @@ func (v *ISetupPropertyStore) GetValue(name string) (*ole.VARIANT, error) {
 		uintptr(unsafe.Pointer(&value)),
 	)
 
-	if hr != 0 {
+	if hr != ole.S_OK {
 		return nil, ole.NewError(hr)
 	}
 

@@ -4,7 +4,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/go-ole/go-ole"
 	"github.com/heaths/go-vssetup/internal/interop"
 	"github.com/heaths/go-vssetup/internal/types"
 	"golang.org/x/text/language"
@@ -194,18 +193,15 @@ func (i *Instance) Properties() (map[string]interface{}, error) {
 
 	if store, err := i.v2.GetProperties(); err != nil {
 		return nil, err
-	} else if sa, err := store.GetNames(); err != nil {
-		return nil, err
 	} else {
 		defer store.Release()
 
-		conversion := ole.SafeArrayConversion{
-			Array: sa,
+		var names []string
+		if names, err = store.GetNames(); err != nil {
+			return nil, err
 		}
 
-		names := conversion.ToStringArray()
 		properties := make(map[string]interface{}, len(names))
-
 		for _, name := range names {
 			if vt, err := store.GetValue(name); err != nil {
 				return nil, err
