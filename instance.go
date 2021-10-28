@@ -141,6 +141,7 @@ func (i *Instance) ProductPath() (string, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return "", err
 	}
+
 	if s, err := getStringFunc(i.v2.GetProductPath); err != nil {
 		return "", err
 	} else {
@@ -154,6 +155,7 @@ func (i *Instance) ErrorState() (*ErrorState, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return nil, err
 	}
+
 	if e, err := i.v2.GetErrors(); err != nil {
 		return nil, err
 	} else if e != nil {
@@ -222,31 +224,4 @@ func (i *Instance) EnginePath() (string, error) {
 		return "", err
 	}
 	return getStringFunc(i.v2.GetEnginePath)
-}
-
-func getStringFunc(f func() (*types.Bstr, error)) (string, error) {
-	if bstr, err := f(); err != nil {
-		return "", err
-	} else {
-		defer bstr.Close()
-		return bstr.String(), nil
-	}
-}
-
-func getTimeFunc(f func() (*types.Filetime, error)) (time.Time, error) {
-	if ft, err := f(); err != nil {
-		return time.Time{}, err
-	} else {
-		return ft.Time(), nil
-	}
-}
-
-func getLocalizedStringFunc(l language.Tag, f func(uint32) (*types.Bstr, error)) (string, error) {
-	lcid := lcid(l)
-	if bstr, err := f(lcid); err != nil {
-		return "", err
-	} else {
-		defer bstr.Close()
-		return bstr.String(), nil
-	}
 }

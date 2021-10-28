@@ -71,6 +71,17 @@ func TestPrintStringFunc_Method(t *testing.T) {
 	}
 }
 
+func TestPrintStringArrayFunc(t *testing.T) {
+	w := &bytes.Buffer{}
+	p := newPrinter(w, Options{})
+	p.printStringArrayFunc("", stringArrayFunc)
+
+	want := "stringArrayFunc = a b\n"
+	if w.String() != want {
+		t.Fatalf(`got %q, expected %q`, w.String(), want)
+	}
+}
+
 func TestPrintBoolFunc(t *testing.T) {
 	w := &bytes.Buffer{}
 	p := newPrinter(w, Options{})
@@ -152,6 +163,10 @@ func stringFunc() (string, error) {
 
 func stringFuncEmpty() (string, error) {
 	return "", nil
+}
+
+func stringArrayFunc() ([]string, error) {
+	return []string{"a", "b"}, nil
 }
 
 func boolFunc(b bool) func() (bool, error) {

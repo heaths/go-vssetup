@@ -75,7 +75,9 @@ func (p *PackageReference) IsExtension() (bool, error) {
 // FailedPackageReference describes unique attributes of a failed package.
 type FailedPackageReference struct {
 	PackageReference
-	vf *interop.ISetupFailedPackageReference
+	vf  *interop.ISetupFailedPackageReference
+	vf2 *interop.ISetupFailedPackageReference2
+	vf3 *interop.ISetupFailedPackageReference3
 }
 
 func newFailedPackageReference(v *interop.ISetupPackageReference, vf *interop.ISetupFailedPackageReference) *FailedPackageReference {
@@ -97,8 +99,82 @@ func (p *FailedPackageReference) Close() error {
 			p.vf.Release()
 		}
 
+		if p.vf2 != nil {
+			p.vf2.Release()
+		}
+
+		if p.vf3 != nil {
+			p.vf3.Release()
+		}
+
 		return p.PackageReference.Close()
 	}
 
 	return nil
+}
+
+// LogFilePath gets the path to the failed package log file.
+func (p *FailedPackageReference) LogFilePath() (string, error) {
+	if err := p.vf.ISetupFailedPackageReference2(&p.vf2); err != nil {
+		return "", err
+	}
+	return getStringFunc(p.vf2.GetLogFilePath)
+}
+
+// Description gets a description of the package failure.
+func (p *FailedPackageReference) Description() (string, error) {
+	if err := p.vf.ISetupFailedPackageReference2(&p.vf2); err != nil {
+		return "", err
+	}
+	return getStringFunc(p.vf2.GetDescription)
+}
+
+// Signature gets a unique signature of the package failure for error reporting.
+func (p *FailedPackageReference) Signature() (string, error) {
+	if err := p.vf.ISetupFailedPackageReference2(&p.vf2); err != nil {
+		return "", err
+	}
+	return getStringFunc(p.vf2.GetSignature)
+}
+
+// Details gets the details of the package failure.
+func (p *FailedPackageReference) Details() ([]string, error) {
+	if err := p.vf.ISetupFailedPackageReference2(&p.vf2); err != nil {
+		return nil, err
+	}
+	return p.vf2.GetDetails()
+}
+
+// AffectedPackages gets the list of packages that were not installed because of this package failure.
+func (p *FailedPackageReference) AffectedPackages() ([]*PackageReference, error) {
+	if err := p.vf.ISetupFailedPackageReference2(&p.vf2); err != nil {
+		return nil, err
+	}
+
+	if affectedPackages, err := p.vf2.GetAffectedPackages(); err != nil {
+		return nil, err
+	} else {
+		packages := make([]*PackageReference, len(affectedPackages))
+		for i, ref := range affectedPackages {
+			defer ref.Release()
+			packages[i] = newPackageReference(ref)
+		}
+		return packages, nil
+	}
+}
+
+// Action gets the attempted install action for the failed package.
+func (p *FailedPackageReference) Action() (string, error) {
+	if err := p.vf.ISetupFailedPackageReference3(&p.vf3); err != nil {
+		return "", err
+	}
+	return getStringFunc(p.vf3.GetAction)
+}
+
+// ReturnCode gets the return code of the failed package.
+func (p *FailedPackageReference) ReturnCode() (string, error) {
+	if err := p.vf.ISetupFailedPackageReference3(&p.vf3); err != nil {
+		return "", err
+	}
+	return getStringFunc(p.vf3.GetReturnCode)
 }
