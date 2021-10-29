@@ -103,7 +103,8 @@ func ParseVersion(s string) (version uint64, err error) {
 	return q.vh.ParseVersion(s)
 }
 
-// ParseVersion parses a version string like "1.2.3.4" and returns a comparable numeric form.
+// ParseVersionRange parses a version range string like "[16.0,)"
+// and returns comparable minimum and maximum numeric forms.
 func ParseVersionRange(s string) (min, max uint64, err error) {
 	v, err := q.init()
 	if v == nil {
