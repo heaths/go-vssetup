@@ -1,4 +1,3 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled",
-    "go.buildTags": "live"
+    "C_Cpp.errorSquiggles": "Disabled"
 }
