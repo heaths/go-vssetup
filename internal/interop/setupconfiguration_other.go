@@ -20,3 +20,7 @@ func (v *ISetupConfiguration) GetInstanceForPath(path string) (*ISetupInstance, 
 func (v *ISetupConfiguration2) EnumAllInstances() (*IEnumSetupInstances, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupConfiguration2) ISetupHelper(vh **ISetupHelper) error {
+	return errors.NotImplemented(nil)
+}

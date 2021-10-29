@@ -25,12 +25,13 @@ var (
 	IID_ISetupInstance                = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
 	IID_ISetupInstance2               = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
 	IID_ISetupPropertyStore           = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
-	IID_ISetupPackageReference        = ole.NewGUID("da8d8a16-b2b6-4487-a2f1-594ccccd6bf5")
+	IID_ISetupPackageReference        = ole.NewGUID("DA8D8A16-B2B6-4487-A2F1-594CCCCD6BF5")
 	IID_ISetupErrorState              = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
 	IID_ISetupErrorState2             = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
 	IID_ISetupFailedPackageReference  = ole.NewGUID("E73559CD-7003-4022-B134-27DC650B280F")
 	IID_ISetupFailedPackageReference2 = ole.NewGUID("0FAD873E-E874-42E3-B268-4FE2F096B9CA")
 	IID_ISetupFailedPackageReference3 = ole.NewGUID("EBC3AE68-AD15-44E8-8377-39DBF0316F6C")
+	IID_ISetupHelper                  = ole.NewGUID("42B21B78-6192-463E-87BF-D577838F1D5C")
 )
 
 type ISetupConfiguration struct {
@@ -221,4 +222,18 @@ type ISetupFailedPackageReference3Vtbl struct {
 
 func (v *ISetupFailedPackageReference3) VTable() *ISetupFailedPackageReference3Vtbl {
 	return (*ISetupFailedPackageReference3Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupHelper struct {
+	ole.IUnknown
+}
+
+type ISetupHelperVtbl struct {
+	ole.IUnknownVtbl
+	ParseVersion      uintptr
+	ParseVersionRange uintptr
+}
+
+func (v *ISetupHelper) VTable() *ISetupHelperVtbl {
+	return (*ISetupHelperVtbl)(unsafe.Pointer(v.RawVTable))
 }

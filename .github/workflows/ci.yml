@@ -25,7 +25,7 @@ jobs:
           lint: true
           args:
           # Depends on the hosted agent having Visual Studio 2019 installed.
-          - "--tags=live"
+          - "-tags=live"
         - os: ubuntu-latest
           goos: linux
           lint: true

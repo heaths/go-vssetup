@@ -10,6 +10,7 @@ import (
 
 type query struct {
 	v       *interop.ISetupConfiguration2
+	vh      *interop.ISetupHelper
 	err     error
 	didInit bool
 }
@@ -85,6 +86,36 @@ func InstanceForPath(path string) (*Instance, error) {
 	} else {
 		return newInstance(instance), nil
 	}
+}
+
+// ParseVersion parses a version string like "1.2.3.4" and returns a comparable numeric form.
+func ParseVersion(s string) (version uint64, err error) {
+	v, err := q.init()
+	if v == nil {
+		return
+	}
+
+	err = v.ISetupHelper(&q.vh)
+	if err != nil {
+		return
+	}
+
+	return q.vh.ParseVersion(s)
+}
+
+// ParseVersion parses a version string like "1.2.3.4" and returns a comparable numeric form.
+func ParseVersionRange(s string) (min, max uint64, err error) {
+	v, err := q.init()
+	if v == nil {
+		return
+	}
+
+	err = v.ISetupHelper(&q.vh)
+	if err != nil {
+		return
+	}
+
+	return q.vh.ParseVersionRange(s)
 }
 
 func (q *query) init() (*interop.ISetupConfiguration2, error) {
