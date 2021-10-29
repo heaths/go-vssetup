@@ -82,3 +82,23 @@ func (v *ISetupConfiguration2) EnumAllInstances() (*IEnumSetupInstances, error) 
 
 	return e, nil
 }
+
+func (v *ISetupConfiguration2) ISetupHelper(vh **ISetupHelper) error {
+	if *vh != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupHelper)),
+		uintptr(unsafe.Pointer(vh)),
+	)
+
+	if hr != ole.S_OK {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
