@@ -1,6 +1,21 @@
 package vssetup
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/text/language"
+)
+
+func ExampleInstances() {
+	instances, _ := Instances(false)
+	for _, instance := range instances {
+		if s, err := instance.DisplayName(language.AmericanEnglish); err == nil {
+			fmt.Println(s)
+		}
+	}
+
+	// Output: Visual Studio Enterprise 2019
+}
 
 func ExampleParseVersion() {
 	if version, err := ParseVersion("1.2.3.4"); err == nil {
