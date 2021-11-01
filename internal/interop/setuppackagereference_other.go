@@ -93,5 +93,5 @@ func (v *ISetupPackageReference) ISetupProductReference2(pr2 **ISetupProductRefe
 }
 
 func (v *ISetupProductReference2) GetSupportsExtensions() (bool, error) {
-	false, errors.NotImplemented(nil)
+	return false, errors.NotImplemented(nil)
 }
