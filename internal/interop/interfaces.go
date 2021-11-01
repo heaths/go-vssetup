@@ -32,6 +32,8 @@ var (
 	IID_ISetupFailedPackageReference2 = ole.NewGUID("0FAD873E-E874-42E3-B268-4FE2F096B9CA")
 	IID_ISetupFailedPackageReference3 = ole.NewGUID("EBC3AE68-AD15-44E8-8377-39DBF0316F6C")
 	IID_ISetupHelper                  = ole.NewGUID("42B21B78-6192-463E-87BF-D577838F1D5C")
+	IID_ISetupProductReference        = ole.NewGUID("A170B5EF-223D-492B-B2D4-945032980685")
+	IID_ISetupProductReference2       = ole.NewGUID("279A5DB3-7503-444B-B34D-308F961B9A06")
 )
 
 type ISetupConfiguration struct {
@@ -236,4 +238,30 @@ type ISetupHelperVtbl struct {
 
 func (v *ISetupHelper) VTable() *ISetupHelperVtbl {
 	return (*ISetupHelperVtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupProductReference struct {
+	ISetupPackageReference
+}
+
+type ISetupProductReferenceVtbl struct {
+	ISetupPackageReferenceVtbl
+	GetIsInstalled uintptr
+}
+
+func (v *ISetupProductReference) VTable() *ISetupProductReferenceVtbl {
+	return (*ISetupProductReferenceVtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupProductReference2 struct {
+	ISetupProductReference
+}
+
+type ISetupProductReference2Vtbl struct {
+	ISetupProductReferenceVtbl
+	GetSupportsExtensions uintptr
+}
+
+func (v *ISetupProductReference2) VTable() *ISetupProductReference2Vtbl {
+	return (*ISetupProductReference2Vtbl)(unsafe.Pointer(v.RawVTable))
 }

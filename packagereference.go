@@ -178,3 +178,56 @@ func (p *FailedPackageReference) ReturnCode() (string, error) {
 	}
 	return getStringFunc(p.vf3.GetReturnCode)
 }
+
+// ProductReference describes unique attributes of a product package.
+type ProductReference struct {
+	PackageReference
+	vp  *interop.ISetupProductReference
+	vp2 *interop.ISetupProductReference2
+}
+
+func newProductReference(v *interop.ISetupPackageReference) *ProductReference {
+	p := &ProductReference{
+		PackageReference: PackageReference{
+			v: v,
+		},
+	}
+
+	runtime.SetFinalizer(p, (*ProductReference).Close)
+	return p
+}
+
+// Close releases any resources used by this ProductReference immediately.
+func (p *ProductReference) Close() error {
+	if p.v != nil {
+		if p.vp != nil {
+			p.vp.Release()
+		}
+
+		if p.vp2 != nil {
+			p.vp2.Release()
+		}
+
+		return p.PackageReference.Close()
+	}
+
+	return nil
+}
+
+// IsInstalled gets whether the product is completely installed.
+func (p *ProductReference) IsInstalled() (bool, error) {
+	if err := p.v.ISetupProductReference(&p.vp); err != nil {
+		return false, err
+	}
+
+	return p.vp.GetIsInstalled()
+}
+
+// SupportsExtensions gets whether the product supports custom extensions e.g., VSIX packages.
+func (p *ProductReference) SupportsExtensions() (bool, error) {
+	if err := p.v.ISetupProductReference2(&p.vp2); err != nil {
+		return false, err
+	}
+
+	return p.vp2.GetSupportsExtensions()
+}
