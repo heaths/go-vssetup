@@ -165,3 +165,51 @@ func (v *ISetupFailedPackageReference3) GetAction() (*types.Bstr, error) {
 func (v *ISetupFailedPackageReference3) GetReturnCode() (*types.Bstr, error) {
 	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetReturnCode)
 }
+
+func (v *ISetupPackageReference) ISetupProductReference(pr **ISetupProductReference) error {
+	if *pr != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupProductReference)),
+		uintptr(unsafe.Pointer(pr)),
+	)
+
+	if hr != ole.S_OK {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
+
+func (v *ISetupProductReference) GetIsInstalled() (bool, error) {
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetIsInstalled)
+}
+
+func (v *ISetupPackageReference) ISetupProductReference2(pr2 **ISetupProductReference2) error {
+	if *pr2 != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupProductReference2)),
+		uintptr(unsafe.Pointer(pr2)),
+	)
+
+	if hr != ole.S_OK {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
+
+func (v *ISetupProductReference2) GetSupportsExtensions() (bool, error) {
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetSupportsExtensions)
+}

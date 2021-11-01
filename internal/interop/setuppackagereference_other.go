@@ -79,3 +79,19 @@ func (v *ISetupFailedPackageReference3) GetAction() (*types.Bstr, error) {
 func (v *ISetupFailedPackageReference3) GetReturnCode() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupPackageReference) ISetupProductReference(pr **ISetupProductReference) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupProductReference) GetIsInstalled() (bool, error) {
+	return false, errors.NotImplemented(nil)
+}
+
+func (v *ISetupPackageReference) ISetupProductReference2(pr2 **ISetupProductReference2) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupProductReference2) GetSupportsExtensions() (bool, error) {
+	false, errors.NotImplemented(nil)
+}

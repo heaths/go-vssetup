@@ -16,6 +16,7 @@
         "regdb",
         "rgelt",
         "uninitialize",
+        "vsix",
         "vssetup",
         "vswhere",
         "vtbl"

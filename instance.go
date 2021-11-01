@@ -123,7 +123,7 @@ func (i *Instance) Packages() ([]*PackageReference, error) {
 }
 
 // Product gets a reference to the root product package.
-func (i *Instance) Product() (*PackageReference, error) {
+func (i *Instance) Product() (*ProductReference, error) {
 	if err := i.v.ISetupInstance2(&i.v2); err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (i *Instance) Product() (*PackageReference, error) {
 	if product, err := i.v2.GetProduct(); err != nil {
 		return nil, err
 	} else {
-		return newPackageReference(product), nil
+		return newProductReference(product), nil
 	}
 }
 

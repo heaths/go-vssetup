@@ -62,7 +62,7 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	if opts.Include&Packages != 0 {
 		if product, err := i.Product(); err == nil {
 			defer product.Close()
-			p.printPackageReference("product_", product)
+			p.printProductReference("product_", product)
 		}
 
 		if packages, err := i.Packages(); err == nil {
@@ -204,6 +204,12 @@ func (p *printer) printFailedPackageReference(prefix string, ref *vssetup.Failed
 	p.printStringFunc(prefix, ref.Action)
 	p.printStringFunc(prefix, ref.ReturnCode)
 	p.printStringArrayFunc(prefix, ref.Details)
+}
+
+func (p *printer) printProductReference(prefix string, ref *vssetup.ProductReference) {
+	p.printPackageReference(prefix, &ref.PackageReference)
+	p.printBoolFunc(prefix, ref.IsInstalled)
+	p.printBoolFunc(prefix, ref.SupportsExtensions)
 }
 
 func (p *printer) printMapFunc(prefix string, f func() (map[string]interface{}, error)) {
