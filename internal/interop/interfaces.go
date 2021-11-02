@@ -24,16 +24,17 @@ var (
 	IID_IEnumSetupConfiguration       = ole.NewGUID("6380BCFF-41D3-4B2E-8B2E-BF8A6810C848")
 	IID_ISetupInstance                = ole.NewGUID("B41463C3-8866-43B5-BC33-2B0676F7F42E")
 	IID_ISetupInstance2               = ole.NewGUID("89143C9A-05AF-49B0-B717-72E218A2185C")
+	IID_ISetupInstanceCatalog         = ole.NewGUID("9AD8E40F-39A2-40F1-BF64-0A6C50DD9EEB")
 	IID_ISetupPropertyStore           = ole.NewGUID("C601C175-A3BE-44BC-91F6-4568D230FC83")
 	IID_ISetupPackageReference        = ole.NewGUID("DA8D8A16-B2B6-4487-A2F1-594CCCCD6BF5")
-	IID_ISetupErrorState              = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
-	IID_ISetupErrorState2             = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
 	IID_ISetupFailedPackageReference  = ole.NewGUID("E73559CD-7003-4022-B134-27DC650B280F")
 	IID_ISetupFailedPackageReference2 = ole.NewGUID("0FAD873E-E874-42E3-B268-4FE2F096B9CA")
 	IID_ISetupFailedPackageReference3 = ole.NewGUID("EBC3AE68-AD15-44E8-8377-39DBF0316F6C")
-	IID_ISetupHelper                  = ole.NewGUID("42B21B78-6192-463E-87BF-D577838F1D5C")
 	IID_ISetupProductReference        = ole.NewGUID("A170B5EF-223D-492B-B2D4-945032980685")
 	IID_ISetupProductReference2       = ole.NewGUID("279A5DB3-7503-444B-B34D-308F961B9A06")
+	IID_ISetupErrorState              = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
+	IID_ISetupErrorState2             = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
+	IID_ISetupHelper                  = ole.NewGUID("42B21B78-6192-463E-87BF-D577838F1D5C")
 )
 
 type ISetupConfiguration struct {
@@ -119,6 +120,20 @@ type ISetupInstance2Vtbl struct {
 
 func (v *ISetupInstance2) VTable() *ISetupInstance2Vtbl {
 	return (*ISetupInstance2Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupInstanceCatalog struct {
+	ole.IUnknown
+}
+
+type ISetupInstanceCatalogVtbl struct {
+	ole.IUnknownVtbl
+	GetCatalogInfo uintptr
+	IsPrerelease   uintptr
+}
+
+func (v *ISetupInstanceCatalog) VTable() *ISetupInstanceCatalogVtbl {
+	return (*ISetupInstanceCatalogVtbl)(unsafe.Pointer(v.RawVTable))
 }
 
 type ISetupPropertyStore struct {

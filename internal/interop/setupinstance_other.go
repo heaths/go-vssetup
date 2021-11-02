@@ -80,3 +80,15 @@ func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
 func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupInstance) ISetupInstanceCatalog(vc **ISetupInstanceCatalog) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstanceCatalog) GetCatalogInfo() (*ISetupPropertyStore, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupInstanceCatalog) IsPrerelease() (bool, error) {
+	return false, errors.NotImplemented(nil)
+}

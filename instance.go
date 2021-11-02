@@ -24,6 +24,7 @@ const (
 type Instance struct {
 	v  *interop.ISetupInstance
 	v2 *interop.ISetupInstance2
+	vc *interop.ISetupInstanceCatalog
 }
 
 func newInstance(v *interop.ISetupInstance) *Instance {
@@ -44,6 +45,10 @@ func (i *Instance) Close() error {
 		// Release ISetupInstance2 if initialized.
 		if i.v2 != nil {
 			i.v2.Release()
+		}
+
+		if i.vc != nil {
+			i.vc.Release()
 		}
 
 		runtime.SetFinalizer(i, nil)
@@ -220,4 +225,42 @@ func (i *Instance) EnginePath() (string, error) {
 		return "", err
 	}
 	return getStringFunc(i.v2.GetEnginePath)
+}
+
+// CatalogInfo gets catalog properties for the instance.
+func (i *Instance) CatalogInfo() (map[string]interface{}, error) {
+	if err := i.v.ISetupInstanceCatalog(&i.vc); err != nil {
+		return nil, err
+	}
+
+	if store, err := i.vc.GetCatalogInfo(); err != nil {
+		return nil, err
+	} else {
+		defer store.Release()
+
+		var names []string
+		if names, err = store.GetNames(); err != nil {
+			return nil, err
+		}
+
+		properties := make(map[string]interface{}, len(names))
+		for _, name := range names {
+			if vt, err := store.GetValue(name); err != nil {
+				return nil, err
+			} else {
+				properties[name] = vt.Value()
+			}
+		}
+
+		return properties, nil
+	}
+}
+
+// IsPrerelease gets whether the instance is a prerelease version.
+func (i *Instance) IsPrerelease() (bool, error) {
+	if err := i.v.ISetupInstanceCatalog(&i.vc); err != nil {
+		return false, err
+	}
+
+	return i.vc.IsPrerelease()
 }
