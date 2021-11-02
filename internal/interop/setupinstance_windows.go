@@ -213,3 +213,44 @@ func (v *ISetupInstance2) GetProperties() (*ISetupPropertyStore, error) {
 func (v *ISetupInstance2) GetEnginePath() (*types.Bstr, error) {
 	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetEnginePath)
 }
+
+func (v *ISetupInstance) ISetupInstanceCatalog(vc **ISetupInstanceCatalog) error {
+	if *vc != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupInstanceCatalog)),
+		uintptr(unsafe.Pointer(vc)),
+	)
+
+	if hr != ole.S_OK {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
+
+func (v *ISetupInstanceCatalog) GetCatalogInfo() (*ISetupPropertyStore, error) {
+	var properties *ISetupPropertyStore
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetCatalogInfo,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&properties)),
+		0,
+	)
+
+	if hr != ole.S_OK {
+		return nil, ole.NewError(hr)
+	}
+
+	return properties, nil
+}
+
+func (v *ISetupInstanceCatalog) IsPrerelease() (bool, error) {
+	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().IsPrerelease)
+}

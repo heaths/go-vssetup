@@ -53,10 +53,12 @@ func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	p.printStateFunc(i.State)
 	p.printBoolFunc("", i.IsLaunchable)
 	p.printBoolFunc("", i.IsComplete)
+	p.printBoolFunc("", i.IsPrerelease)
 	p.printBoolFunc("", i.IsRebootRequired)
 	p.printLocalizedStringFunc(opts.Locale, i.DisplayName)
 	p.printLocalizedStringFunc(opts.Locale, i.Description)
 	p.printStringFunc("", i.EnginePath)
+	p.printMapFunc("catalog_", i.CatalogInfo)
 	p.printMapFunc("properties_", i.Properties)
 
 	if opts.Include&Packages != 0 {
