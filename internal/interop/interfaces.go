@@ -34,6 +34,8 @@ var (
 	IID_ISetupProductReference2       = ole.NewGUID("279A5DB3-7503-444B-B34D-308F961B9A06")
 	IID_ISetupErrorState              = ole.NewGUID("46DCCD94-A287-476A-851E-DFBC2FFDBC20")
 	IID_ISetupErrorState2             = ole.NewGUID("9871385B-CA69-48F2-BC1F-7A37CBF0B1EF")
+	IID_ISetupErrorState3             = ole.NewGUID("290019AD-28E2-46D5-9DE5-DA4B6BCF8057")
+	IID_ISetupErrorInfo               = ole.NewGUID("2A2F3292-958E-4905-B36E-013BE84E27AB")
 	IID_ISetupHelper                  = ole.NewGUID("42B21B78-6192-463E-87BF-D577838F1D5C")
 )
 
@@ -196,6 +198,34 @@ type ISetupErrorState2Vtbl struct {
 
 func (v *ISetupErrorState2) VTable() *ISetupErrorState2Vtbl {
 	return (*ISetupErrorState2Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupErrorState3 struct {
+	ISetupErrorState2
+}
+
+type ISetupErrorState3Vtbl struct {
+	ISetupErrorState2Vtbl
+	GetRuntimeError uintptr
+}
+
+func (v *ISetupErrorState3) VTable() *ISetupErrorState3Vtbl {
+	return (*ISetupErrorState3Vtbl)(unsafe.Pointer(v.RawVTable))
+}
+
+type ISetupErrorInfo struct {
+	ole.IUnknown
+}
+
+type ISetupErrorInfoVtbl struct {
+	ole.IUnknownVtbl
+	GetErrorHResult   uintptr
+	GetErrorClassName uintptr
+	GetErrorMessage   uintptr
+}
+
+func (v *ISetupErrorInfo) VTable() *ISetupErrorInfoVtbl {
+	return (*ISetupErrorInfoVtbl)(unsafe.Pointer(v.RawVTable))
 }
 
 type ISetupFailedPackageReference struct {

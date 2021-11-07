@@ -11,6 +11,7 @@ import (
 type ErrorState struct {
 	v  *interop.ISetupErrorState
 	v2 *interop.ISetupErrorState2
+	v3 *interop.ISetupErrorState3
 }
 
 func newErrorState(v *interop.ISetupErrorState) *ErrorState {
@@ -28,9 +29,12 @@ func (e *ErrorState) Close() error {
 		// Call IUnknown.Release() but leave v assigned to avoid AV exceptions.
 		e.v.Release()
 
-		// Release ISetupInstance2 if initialized.
 		if e.v2 != nil {
 			e.v2.Release()
+		}
+
+		if e.v3 != nil {
+			e.v3.Release()
 		}
 
 		runtime.SetFinalizer(e, nil)

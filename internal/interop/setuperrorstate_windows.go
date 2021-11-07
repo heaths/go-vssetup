@@ -107,3 +107,52 @@ func (v *ISetupErrorState2) GetErrorLogFilePath() (*types.Bstr, error) {
 func (v *ISetupErrorState2) GetLogFilePath() (*types.Bstr, error) {
 	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetLogFilePath)
 }
+
+func (v *ISetupErrorState) ISetupErrorState3(v3 **ISetupErrorState3) error {
+	if *v3 != nil {
+		return nil
+	}
+
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupErrorState3)),
+		uintptr(unsafe.Pointer(v3)),
+	)
+
+	if hr != ole.S_OK {
+		return ole.NewError(hr)
+	}
+
+	return nil
+}
+
+func (v *ISetupErrorState3) GetRuntimeError() (*ISetupErrorInfo, error) {
+	var info *ISetupErrorInfo
+	hr, _, _ := syscall.Syscall(
+		v.VTable().GetRuntimeError,
+		2,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(&info)),
+		0,
+	)
+
+	if hr != ole.S_OK {
+		return nil, ole.NewError(hr)
+	}
+
+	return info, nil
+}
+
+func (v *ISetupErrorInfo) GetErrorHResult() (uint32, error) {
+	return uint32Func(uintptr(unsafe.Pointer(v)), v.VTable().GetErrorHResult)
+}
+
+func (v *ISetupErrorInfo) GetErrorClassName() (*types.Bstr, error) {
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetErrorClassName)
+}
+
+func (v *ISetupErrorInfo) GetErrorMessage() (*types.Bstr, error) {
+	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetErrorMessage)
+}

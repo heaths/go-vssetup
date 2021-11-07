@@ -54,3 +54,12 @@ func stringArrayFunc(p, fn uintptr) ([]string, error) {
 
 	return array.ToStringArray(), nil
 }
+
+func uint32Func(p, fn uintptr) (uint32, error) {
+	var i uint32
+	if hr, _, _ := syscall.Syscall(fn, 2, p, uintptr(unsafe.Pointer(&i)), 0); hr != ole.S_OK {
+		return 0, ole.NewError(hr)
+	}
+
+	return i, nil
+}

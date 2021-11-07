@@ -2,6 +2,7 @@ package errors
 
 import "github.com/go-ole/go-ole"
 
+// ComError is implemented by both Error and ole.OleError.
 type ComError interface {
 	error
 	Code() uintptr

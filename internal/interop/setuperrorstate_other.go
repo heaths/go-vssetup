@@ -27,3 +27,23 @@ func (v *ISetupErrorState2) GetErrorLogFilePath() (*types.Bstr, error) {
 func (v *ISetupErrorState2) GetLogFilePath() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
+
+func (v *ISetupErrorState) ISetupErrorState3(v3 **ISetupErrorState3) error {
+	return errors.NotImplemented(nil)
+}
+
+func (v *ISetupErrorState3) GetRuntimeError() (*ISetupErrorInfo, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupErrorInfo) GetErrorHResult() (uint32, error) {
+	return 0, errors.NotImplemented(nil)
+}
+
+func (v *ISetupErrorInfo) GetErrorClassName() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
+
+func (v *ISetupErrorInfo) GetErrorMessage() (*types.Bstr, error) {
+	return nil, errors.NotImplemented(nil)
+}
