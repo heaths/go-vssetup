@@ -264,3 +264,7 @@ func (i *Instance) IsPrerelease() (bool, error) {
 
 	return i.vc.IsPrerelease()
 }
+
+func (i *Instance) queryISetupPropertyStore() (*interop.ISetupPropertyStore, error) {
+	return i.v.ISetupPropertyStore()
+}

@@ -92,3 +92,7 @@ func (v *ISetupInstanceCatalog) GetCatalogInfo() (*ISetupPropertyStore, error) {
 func (v *ISetupInstanceCatalog) IsPrerelease() (bool, error) {
 	return false, errors.NotImplemented(nil)
 }
+
+func (v *ISetupInstance) ISetupPropertyStore() (*ISetupPropertyStore, error) {
+	return nil, errors.NotImplemented(nil)
+}

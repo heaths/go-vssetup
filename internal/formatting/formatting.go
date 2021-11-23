@@ -40,26 +40,44 @@ const (
 type Options struct {
 	Include Includes
 	Locale  language.Tag
+	Raw     bool
 }
 
 func PrintInstance(w io.Writer, i *vssetup.Instance, opts Options) {
 	p := newPrinter(w, opts)
 
-	p.printStringFunc("", i.InstanceID)
-	p.printTimeFunc(i.InstallDate)
-	p.printStringFunc("", i.InstallationName)
-	p.printStringFunc("", i.InstallationPath)
-	p.printStringFunc("", i.ProductPath)
-	p.printStateFunc(i.State)
-	p.printBoolFunc("", i.IsLaunchable)
-	p.printBoolFunc("", i.IsComplete)
-	p.printBoolFunc("", i.IsPrerelease)
-	p.printBoolFunc("", i.IsRebootRequired)
-	p.printLocalizedStringFunc(opts.Locale, i.DisplayName)
-	p.printLocalizedStringFunc(opts.Locale, i.Description)
-	p.printStringFunc("", i.EnginePath)
-	p.printMapFunc("catalog_", i.CatalogInfo)
-	p.printMapFunc("properties_", i.Properties)
+	if opts.Raw {
+		if props, err := vssetup.GetProperties(i); err == nil {
+			for name, value := range props {
+				switch v := value.(type) {
+				case string:
+					if v != "" {
+						p.print("", name, value)
+					}
+				case bool:
+					p.print("", name, or(v, "1", "0"))
+				case uint32:
+					p.print("", name, strconv.FormatUint(uint64(v), 10))
+				}
+			}
+		}
+	} else {
+		p.printStringFunc("", i.InstanceID)
+		p.printTimeFunc(i.InstallDate)
+		p.printStringFunc("", i.InstallationName)
+		p.printStringFunc("", i.InstallationPath)
+		p.printStringFunc("", i.ProductPath)
+		p.printStateFunc(i.State)
+		p.printBoolFunc("", i.IsLaunchable)
+		p.printBoolFunc("", i.IsComplete)
+		p.printBoolFunc("", i.IsPrerelease)
+		p.printBoolFunc("", i.IsRebootRequired)
+		p.printLocalizedStringFunc(opts.Locale, i.DisplayName)
+		p.printLocalizedStringFunc(opts.Locale, i.Description)
+		p.printStringFunc("", i.EnginePath)
+		p.printMapFunc("catalog_", i.CatalogInfo)
+		p.printMapFunc("properties_", i.Properties)
+	}
 
 	if opts.Include&Packages != 0 {
 		if product, err := i.Product(); err == nil {

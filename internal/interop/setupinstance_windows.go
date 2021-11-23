@@ -254,3 +254,19 @@ func (v *ISetupInstanceCatalog) GetCatalogInfo() (*ISetupPropertyStore, error) {
 func (v *ISetupInstanceCatalog) IsPrerelease() (bool, error) {
 	return boolFunc(uintptr(unsafe.Pointer(v)), v.VTable().IsPrerelease)
 }
+
+func (v *ISetupInstance) ISetupPropertyStore() (store *ISetupPropertyStore, err error) {
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupPropertyStore)),
+		uintptr(unsafe.Pointer(&store)),
+	)
+
+	if hr != ole.S_OK {
+		err = ole.NewError(hr)
+	}
+
+	return
+}

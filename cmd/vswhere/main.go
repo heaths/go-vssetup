@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/heaths/go-vssetup"
 	"github.com/heaths/go-vssetup/internal/formatting"
@@ -15,6 +16,7 @@ type options struct {
 	include formatting.Includes
 	locale  *language.Tag
 	path    string
+	raw     bool
 }
 
 func main() {
@@ -25,7 +27,8 @@ func main() {
 	const validIncludes = "errors, packages"
 
 	root := cobra.Command{
-		Use: "Locates instances of Visual Studio",
+		Short: "Locates instances of Visual Studio",
+		Use:   filepath.Base(os.Args[0]),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			for _, arg := range include {
 				switch arg {
@@ -55,6 +58,7 @@ func main() {
 	root.Flags().StringArrayVar(&include, "include", nil, fmt.Sprintf("Other information to include: %s", validIncludes))
 	root.Flags().StringVar(&locale, "locale", "en", "The locale to use for localized values. The default is your preferred system locale.")
 	root.Flags().StringVar(&opts.path, "path", "", "Gets an instance for the given path, if any defined for that path.")
+	root.Flags().BoolVar(&opts.raw, "raw", false, "Format all intrinsic properties as defined.")
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
@@ -86,6 +90,7 @@ func run(opts *options) error {
 	options := formatting.Options{
 		Include: opts.include,
 		Locale:  *opts.locale,
+		Raw:     opts.raw,
 	}
 
 	for i, instance := range instances {
