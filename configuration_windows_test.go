@@ -13,8 +13,6 @@ func ExampleInstances() {
 			fmt.Println(s)
 		}
 	}
-
-	// Output: Visual Studio Enterprise 2019
 }
 
 func ExampleParseVersion() {

@@ -107,3 +107,19 @@ func (v *ISetupErrorState2) GetErrorLogFilePath() (*types.Bstr, error) {
 func (v *ISetupErrorState2) GetLogFilePath() (*types.Bstr, error) {
 	return bstrFunc(uintptr(unsafe.Pointer(v)), v.VTable().GetLogFilePath)
 }
+
+func (v *ISetupErrorState) ISetupPropertyStore() (store *ISetupPropertyStore, err error) {
+	hr, _, _ := syscall.Syscall(
+		v.IUnknown.VTable().QueryInterface,
+		3,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(IID_ISetupPropertyStore)),
+		uintptr(unsafe.Pointer(&store)),
+	)
+
+	if hr != ole.S_OK {
+		err = ole.NewError(hr)
+	}
+
+	return
+}

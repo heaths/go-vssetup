@@ -8,6 +8,7 @@
             "mode": "auto",
             "program": "./cmd/vswhere",
             "args": [
+                "--raw",
                 "--include", "errors",
                 "--include", "packages"
             ]
