@@ -87,6 +87,6 @@ func (e *ErrorState) LogPath() (string, error) {
 	return getStringFunc(e.v2.GetLogFilePath)
 }
 
-func (i *ErrorState) queryISetupPropertyStore() (*interop.ISetupPropertyStore, error) {
-	return i.v.ISetupPropertyStore()
+func (e *ErrorState) queryISetupPropertyStore() (*interop.ISetupPropertyStore, error) {
+	return e.v.ISetupPropertyStore()
 }

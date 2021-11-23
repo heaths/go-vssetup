@@ -28,6 +28,6 @@ func (v *ISetupErrorState2) GetLogFilePath() (*types.Bstr, error) {
 	return nil, errors.NotImplemented(nil)
 }
 
-func (v *ISetupInstance) ISetupPropertyStore() (*ISetupPropertyStore, error) {
+func (v *ISetupErrorState) ISetupPropertyStore() (*ISetupPropertyStore, error) {
 	return nil, errors.NotImplemented(nil)
 }
